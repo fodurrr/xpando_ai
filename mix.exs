@@ -5,6 +5,7 @@ defmodule XPando.MixProject do
     [
       apps_path: "apps",
       version: "0.1.0",
+      elixir: "~> 1.19-rc",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
@@ -23,10 +24,10 @@ defmodule XPando.MixProject do
 
   defp deps do
     [
-      {:ash_phoenix, "~> 2.0"},
-      {:ash_authentication, "~> 4.0"},
-      {:ash_postgres, "~> 2.0"},
-      {:ash, "~> 3.0"},
+      {:ash_phoenix, "~> 2.3"},
+      {:ash_authentication, "~> 4.9"},
+      {:ash_postgres, "~> 2.6"},
+      {:ash, "~> 3.5"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},

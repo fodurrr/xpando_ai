@@ -14,7 +14,7 @@ xPando is built as an **Elixir umbrella application** with three core apps:
 
 ### Prerequisites
 
-- **Elixir** 1.18+ 
+- **Elixir** 1.19-rc+ 
 - **Erlang/OTP** 28+
 - **PostgreSQL** 16+
 - **Node.js** 18+ (for asset compilation)
