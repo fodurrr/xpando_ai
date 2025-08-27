@@ -39,7 +39,7 @@ defmodule XpandoCore.MixProject do
       {:jason, "~> 1.2"},
       {:picosat_elixir, "~> 0.2"},
       # Testing utilities (Ash-native)
-      {:stream_data, "~> 1.1", only: :test}
+      {:stream_data, "~> 1.1"}
     ]
   end
 end

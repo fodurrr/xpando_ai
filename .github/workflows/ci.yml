@@ -84,18 +84,18 @@ jobs:
     - name: 🧪 Run Tests
       if: matrix.check == 'test'
       env:
-        # It's best practice to use the service name as the hostname
         DATABASE_URL: "ecto://postgres:postgres@postgres:5432/xpando_test"
       run: |
-        # Ensure project is compiled
+        # Ensure the project is fully compiled
         mix compile --warnings-as-errors
         
-        # Create, migrate, and seed the test database
-        # Change into the app with the Ecto Repo to run setup, then change back
-        cd apps/xpando_core && mix ecto.setup && cd ../..
+        # Run the Ash-specific setup command from *within* the correct app's directory
+        cd apps/xpando_core && mix ash.setup && cd ../..
         
-        # Run tests
+        # Now, run all tests from the umbrella root
         mix test
+
+        
     # - name: 🔎 Cache Dialyzer PLT
     #   if: matrix.check == 'dialyzer'
     #   uses: actions/cache@v4
