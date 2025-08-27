@@ -105,4 +105,8 @@ coverage/
 # Package managers
 yarn.lock
 package-lock.json
-pnpm-lock.yamlpriv/plts/
+pnpm-lock.yaml
+
+# Dialyzer PLT files (let Dialyzer manage them in default location)
+*.plt
+*.plt.hash

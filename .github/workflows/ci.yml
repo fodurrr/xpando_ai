@@ -115,7 +115,6 @@ jobs:
         path: |
           deps
           _build
-          priv/plts
         key: dialyzer-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('**/mix.lock') }}
         restore-keys: |
           dialyzer-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
