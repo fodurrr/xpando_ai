@@ -91,7 +91,8 @@ jobs:
         mix compile --warnings-as-errors
         
         # Create, migrate, and seed the test database
-        mix ecto.setup
+        # Change into the app with the Ecto Repo to run setup, then change back
+        cd apps/xpando_core && mix ecto.setup && cd ../..
         
         # Run tests
         mix test
