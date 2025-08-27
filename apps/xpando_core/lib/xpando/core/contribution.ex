@@ -11,6 +11,8 @@ defmodule XPando.Core.Contribution do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  require Ash.Query
+
   postgres do
     table("contributions")
     repo(XPando.Repo)

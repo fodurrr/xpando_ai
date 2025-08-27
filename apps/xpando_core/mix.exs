@@ -38,7 +38,8 @@ defmodule XpandoCore.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:jason, "~> 1.2"},
       {:picosat_elixir, "~> 0.2"},
-      {:ex_machina, "~> 2.7", only: :test}
+      # Testing utilities (Ash-native)
+      {:stream_data, "~> 1.1", only: :test}
     ]
   end
 end

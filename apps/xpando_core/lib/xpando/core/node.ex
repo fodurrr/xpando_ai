@@ -12,6 +12,8 @@ defmodule XPando.Core.Node do
     extensions: [AshAuthentication],
     authorizers: [Ash.Policy.Authorizer]
 
+  require Ash.Query
+
   postgres do
     table("nodes")
     repo(XPando.Repo)

@@ -1,0 +1,428 @@
+{
+  "attributes": [
+    {
+      "allow_nil?": false,
+      "default": "fragment(\"gen_random_uuid()\")",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": true,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "contributions_node_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "nodes"
+      },
+      "scale": null,
+      "size": null,
+      "source": "node_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "contributions_knowledge_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "knowledge"
+      },
+      "scale": null,
+      "size": null,
+      "source": "knowledge_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "contribution_type",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "%{}",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "contribution_data",
+      "type": "map"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"5.0\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 2,
+      "size": null,
+      "source": "quality_score",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.500\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 3,
+      "size": null,
+      "source": "accuracy_assessment",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.500\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 3,
+      "size": null,
+      "source": "value_rating",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.500\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 3,
+      "size": null,
+      "source": "novelty_factor",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.0000\"",
+      "generated?": false,
+      "precision": 10,
+      "primary_key?": false,
+      "references": null,
+      "scale": 4,
+      "size": null,
+      "source": "base_reward",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.0000\"",
+      "generated?": false,
+      "precision": 10,
+      "primary_key?": false,
+      "references": null,
+      "scale": 4,
+      "size": null,
+      "source": "quality_bonus",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.0000\"",
+      "generated?": false,
+      "precision": 10,
+      "primary_key?": false,
+      "references": null,
+      "scale": 4,
+      "size": null,
+      "source": "network_bonus",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.0000\"",
+      "generated?": false,
+      "precision": 10,
+      "primary_key?": false,
+      "references": null,
+      "scale": 4,
+      "size": null,
+      "source": "total_reward",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"pending\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "reward_status",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.000\"",
+      "generated?": false,
+      "precision": 6,
+      "primary_key?": false,
+      "references": null,
+      "scale": 3,
+      "size": null,
+      "source": "impact_score",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.000\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 3,
+      "size": null,
+      "source": "influence_factor",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "0",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "citation_count",
+      "type": "bigint"
+    },
+    {
+      "allow_nil?": true,
+      "default": "0",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "peer_reviews",
+      "type": "bigint"
+    },
+    {
+      "allow_nil?": true,
+      "default": "0",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "positive_reviews",
+      "type": "bigint"
+    },
+    {
+      "allow_nil?": true,
+      "default": "false",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "consensus_reached",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.000\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 3,
+      "size": null,
+      "source": "consensus_score",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"under_review\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "contribution_status",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "reviewed_at",
+      "type": "utc_datetime"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "accepted_at",
+      "type": "utc_datetime"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "expires_at",
+      "type": "utc_datetime"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"5.0\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 2,
+      "size": null,
+      "source": "feedback_score",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"0.500\"",
+      "generated?": false,
+      "precision": 4,
+      "primary_key?": false,
+      "references": null,
+      "scale": 3,
+      "size": null,
+      "source": "learning_value",
+      "type": "decimal"
+    },
+    {
+      "allow_nil?": false,
+      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "inserted_at",
+      "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": false,
+      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "updated_at",
+      "type": "utc_datetime_usec"
+    }
+  ],
+  "base_filter": null,
+  "check_constraints": [],
+  "custom_indexes": [],
+  "custom_statements": [],
+  "has_create_action": true,
+  "hash": "0C61C80019B07C53DCF1B18AF044B0D1D3A5A6BDA9B44FA6DB400BE4FD7F87AF",
+  "identities": [
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "contributions_unique_node_knowledge_type_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "node_id"
+        },
+        {
+          "type": "atom",
+          "value": "knowledge_id"
+        },
+        {
+          "type": "atom",
+          "value": "contribution_type"
+        }
+      ],
+      "name": "unique_node_knowledge_type",
+      "nils_distinct?": true,
+      "where": null
+    }
+  ],
+  "multitenancy": {
+    "attribute": null,
+    "global": null,
+    "strategy": null
+  },
+  "repo": "Elixir.XPando.Repo",
+  "schema": null,
+  "table": "contributions"
+}

@@ -2,8 +2,8 @@ defmodule XPando.DataCase do
   @moduledoc """
   Test case template for xPando database-related tests.
 
-  Provides database transaction handling, Ecto imports, and factory
-  setup for tests that interact with the PostgreSQL database.
+  Provides database transaction handling, Ash imports, and generator
+  setup for tests that interact with Ash resources and PostgreSQL database.
   """
 
   use ExUnit.CaseTemplate
@@ -18,7 +18,15 @@ defmodule XPando.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import XPando.DataCase
-      import XPando.Factory
+      import XPando.TestGenerators
+
+      # Ash testing imports
+      import Ash.Test
+      import Ash.Generator, only: [generate: 1, generate_many: 2]
+      import Ash.Seed, only: [seed!: 2]
+
+      # Required for Ash.Query.filter usage
+      require Ash.Query
     end
   end
 

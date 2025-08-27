@@ -11,6 +11,8 @@ defmodule XPando.Core.Knowledge do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  require Ash.Query
+
   postgres do
     table("knowledge")
     repo(XPando.Repo)
