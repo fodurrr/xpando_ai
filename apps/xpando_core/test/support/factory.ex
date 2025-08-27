@@ -1,4 +1,11 @@
 defmodule XPando.Factory do
+  @moduledoc """
+  Test factory for creating xPando domain resource fixtures.
+
+  Provides factory functions for generating Node, Knowledge, and Contribution
+  test data using ExMachina for consistent and reliable testing.
+  """
+
   use ExMachina.Ecto, repo: XPando.Repo
 
   def node_factory do

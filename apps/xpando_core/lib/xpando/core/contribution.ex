@@ -1,4 +1,11 @@
 defmodule XPando.Core.Contribution do
+  @moduledoc """
+  Junction resource representing node contributions to knowledge items.
+
+  Tracks quality assessments, token rewards, impact metrics, and consensus
+  scoring for contributions made by nodes to the knowledge network.
+  """
+
   use Ash.Resource,
     domain: XPando.Core,
     data_layer: AshPostgres.DataLayer,
@@ -361,11 +368,11 @@ defmodule XPando.Core.Contribution do
     calculate :review_rate,
               :decimal,
               expr(
-                if(
-                  peer_reviews > 0,
-                  positive_reviews / peer_reviews,
+                if peer_reviews > 0 do
+                  positive_reviews / peer_reviews
+                else
                   decimal("0.0")
-                )
+                end
               ) do
       description("Calculate percentage of positive reviews")
     end
@@ -373,11 +380,11 @@ defmodule XPando.Core.Contribution do
     calculate :reward_efficiency,
               :decimal,
               expr(
-                if(
-                  total_reward > 0,
-                  impact_score / total_reward,
+                if total_reward > 0 do
+                  impact_score / total_reward
+                else
                   decimal("0.0")
-                )
+                end
               ) do
       description("Calculate impact per token rewarded")
     end

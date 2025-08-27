@@ -1,4 +1,11 @@
 defmodule XPando.Core.Node.ValidatePublicKey do
+  @moduledoc """
+  Custom Ash validation for node cryptographic public keys.
+
+  Ensures public keys are properly formatted and valid for use in
+  cryptographic operations within the P2P network.
+  """
+
   use Ash.Resource.Validation
 
   @impl true

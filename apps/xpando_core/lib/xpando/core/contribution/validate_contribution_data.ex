@@ -1,4 +1,11 @@
 defmodule XPando.Core.Contribution.ValidateContributionData do
+  @moduledoc """
+  Custom Ash validation for contribution data integrity.
+
+  Ensures contribution records have required data fields and
+  meet quality standards before being persisted to the database.
+  """
+
   use Ash.Resource.Validation
 
   @impl true

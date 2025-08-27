@@ -1,4 +1,11 @@
 defmodule XPando.Core.Knowledge do
+  @moduledoc """
+  Core resource representing validated knowledge items in the distributed network.
+
+  Stores content with integrity checking via SHA-256 hashing, validation workflow
+  tracking, confidence scoring, and quality metrics for collective intelligence.
+  """
+
   use Ash.Resource,
     domain: XPando.Core,
     data_layer: AshPostgres.DataLayer,
@@ -376,11 +383,11 @@ defmodule XPando.Core.Knowledge do
     calculate :validation_rate,
               :decimal,
               expr(
-                if(
-                  validation_count > 0,
-                  positive_validations / validation_count,
+                if validation_count > 0 do
+                  positive_validations / validation_count
+                else
                   decimal("0.0")
-                )
+                end
               ) do
       description("Calculate percentage of positive validations")
     end

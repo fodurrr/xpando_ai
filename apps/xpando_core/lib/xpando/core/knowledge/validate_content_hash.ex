@@ -1,4 +1,11 @@
 defmodule XPando.Core.Knowledge.ValidateContentHash do
+  @moduledoc """
+  Custom Ash validation for knowledge content integrity.
+
+  Validates that knowledge content matches its SHA-256 hash to ensure
+  data integrity and prevent tampering in the distributed network.
+  """
+
   use Ash.Resource.Validation
 
   @impl true

@@ -1,4 +1,11 @@
 defmodule XPando.Core.Node do
+  @moduledoc """
+  Core domain resource representing network nodes in the xPando P2P network.
+
+  Nodes are AI participants with cryptographic identities, reputation scores,
+  and network connection capabilities for distributed knowledge sharing.
+  """
+
   use Ash.Resource,
     domain: XPando.Core,
     data_layer: AshPostgres.DataLayer,
@@ -52,7 +59,7 @@ defmodule XPando.Core.Node do
     attribute :port, :integer do
       description("Network port for P2P communication")
       default(8080)
-      constraints(min: 1, max: 65535)
+      constraints(min: 1, max: 65_535)
     end
 
     # Connection State
@@ -247,11 +254,11 @@ defmodule XPando.Core.Node do
     calculate :success_rate,
               :decimal,
               expr(
-                if(
-                  total_validations > 0,
-                  successful_validations / total_validations,
+                if total_validations > 0 do
+                  successful_validations / total_validations
+                else
                   decimal("0.0")
-                )
+                end
               ) do
       description("Calculate validation success rate")
     end
