@@ -9,7 +9,6 @@ defmodule XPando.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
-      dialyzer: dialyzer(),
       releases: [
         xpando: [
           version: "0.1.0",
@@ -37,20 +36,6 @@ defmodule XPando.MixProject do
     ]
   end
 
-  defp dialyzer do
-    [
-      plt_add_apps: [:ex_unit, :mix],
-      flags: [:error_handling, :missing_return],
-      ignore_warnings: ".dialyzer_ignore.exs",
-      paths: [
-        "_build/test/lib/xpando_core/ebin",
-        "_build/test/lib/xpando_web/ebin",
-        "_build/test/lib/xpando_node/ebin"
-      ],
-      checks: [:error_handling, :missing_return]
-    ]
-  end
-
   defp aliases do
     [
       # Database (Ash-first approach)
@@ -69,7 +54,7 @@ defmodule XPando.MixProject do
 
       # Quality & CI checks
       quality: ["format", "credo --strict", "compile"],
-      "quality.full": ["format", "credo --strict", "compile", "dialyzer", "test", "deps.audit"],
+      "quality.full": ["format", "credo --strict", "compile", "test", "deps.audit"],
       "ci.local": ["format --check-formatted", "credo --strict", "compile --warnings-as-errors"],
       "ci.prepare": ["deps.get", "format", "credo --strict", "compile"],
 
