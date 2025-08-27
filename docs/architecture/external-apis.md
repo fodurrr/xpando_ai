@@ -146,3 +146,77 @@ end
 - `GET /apps/{app}/status` - Monitor application health and performance
 
 **Integration Notes:** Used for automated scaling based on node network size and performance metrics. Integration primarily through flyctl CLI and GitHub Actions rather than direct API calls.
+
+## MCP Servers (Internal Services)
+
+### Tidewave MCP Server
+
+- **Purpose:** Real-time Model Context Protocol server providing AI agent communication and specialized tool access
+- **Type:** Server-Sent Events (SSE) 
+- **Base URL(s):** http://localhost:4000/tidewave/mcp
+- **Authentication:** Local development - no authentication required
+- **Protocol:** MCP 2024-11-05 specification compliant
+
+**Integration Notes:** Primary MCP server for real-time AI agent interactions. Provides streaming responses and maintains persistent connections for continuous tool access. Used by Claude Code and other MCP-compatible AI agents for accessing xPando-specific tools and resources.
+
+```elixir
+# Example MCP client connection
+defmodule XPando.MCP.TidewaveClient do
+  def connect do
+    EventsourceEx.new("http://localhost:4000/tidewave/mcp", 
+      headers: [{"Accept", "text/event-stream"}]
+    )
+  end
+  
+  def send_tool_request(connection, tool_name, params) do
+    message = %{
+      jsonrpc: "2.0",
+      method: "tools/call",
+      params: %{
+        name: tool_name,
+        arguments: params
+      }
+    }
+    EventsourceEx.send_message(connection, Jason.encode!(message))
+  end
+end
+```
+
+### Ash AI MCP Server
+
+- **Purpose:** Exposes Ash framework resources and actions as MCP tools for AI agent integration
+- **Type:** HTTP-based MCP server
+- **Base URL(s):** http://localhost:4000/ash_ai/mcp  
+- **Authentication:** Local development - no authentication required
+- **Protocol:** MCP 2024-11-05 specification compliant
+
+**Key Tool Categories:**
+- Resource CRUD operations (create, read, update, delete)
+- Custom Ash actions exposed as tools
+- Vectorization and embedding tools
+- Prompt-backed action execution
+
+**Integration Notes:** Bridges Ash framework capabilities with AI agents through standardized MCP protocol. Automatically exposes configured Ash resources and actions as callable tools. Essential for AI agents to interact with xPando's domain models and business logic.
+
+```elixir
+# Example tool call via HTTP
+defmodule XPando.MCP.AshAIClient do
+  @base_url "http://localhost:4000/ash_ai/mcp"
+  
+  def call_tool(tool_name, params) do
+    body = %{
+      jsonrpc: "2.0",
+      method: "tools/call", 
+      params: %{
+        name: tool_name,
+        arguments: params
+      },
+      id: generate_request_id()
+    }
+    
+    HTTPoison.post("#{@base_url}/call", Jason.encode!(body), [
+      {"Content-Type", "application/json"}
+    ])
+  end
+end
+```

@@ -11,7 +11,8 @@ After reviewing the PRD, xPando is a **greenfield project** building a peer-to-p
 
 **Key Technical Constraints Identified:**
 - Elixir umbrella application structure (Core/Web/Node apps)
-- Ash Framework ecosystem (ash_postgres, ash_authentication, ash_phoenix)
+- Ash Framework ecosystem (ash_postgres, ash_authentication, ash_phoenix, ash_ai)
+- Igniter for intelligent code generation and dependency management
 - Phoenix LiveView with DaisyUI for real-time UI
 - Solana blockchain integration for XPD tokens
 - Broadway pipelines for AI provider integration

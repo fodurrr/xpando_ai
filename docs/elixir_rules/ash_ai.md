@@ -240,6 +240,28 @@ The function receives:
 
 ## Model Context Protocol (MCP) Server
 
+### xPando MCP Server Configuration
+
+The xPando project uses two dedicated MCP servers configured in `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "tidewave": {
+      "type": "sse",
+      "url": "http://localhost:4000/tidewave/mcp"
+    },
+    "ash_ai": {
+      "type": "http", 
+      "url": "http://localhost:4000/ash_ai/mcp"
+    }
+  }
+}
+```
+
+**Tidewave MCP Server** - Primary real-time server using Server-Sent Events for streaming AI agent interactions
+**Ash AI MCP Server** - HTTP-based server specifically for exposing Ash resources and actions as MCP tools
+
 ### Development MCP Server
 
 For development environments, add the dev MCP server to your Phoenix endpoint:
@@ -260,6 +282,8 @@ end
 ### Production MCP Server
 
 For production environments, set up authentication and add the MCP router:
+
+**Note:** The xPando project's ash_ai MCP server at `http://localhost:4000/ash_ai/mcp` follows this production pattern and exposes the configured Ash resources as MCP tools for AI agents.
 
 ```elixir
 # Add api_key strategy to your auth pipeline
@@ -285,6 +309,30 @@ scope "/mcp" do
 end
 ```
 
+## Agent Integration Guidelines
+
+### When to Use MCP Servers
+
+AI agents working on xPando should leverage the configured MCP servers whenever:
+
+1. **Tidewave MCP Server** (`http://localhost:4000/tidewave/mcp`):
+   - Real-time streaming operations are needed
+   - Persistent connections for continuous tool access
+   - Server-sent events for live updates
+
+2. **Ash AI MCP Server** (`http://localhost:4000/ash_ai/mcp`):
+   - CRUD operations on Ash resources
+   - Executing custom Ash actions
+   - Vectorization and embedding operations
+   - Prompt-backed action execution
+
+### Agent Best Practices
+
+- Always check for available MCP tools before implementing custom solutions
+- Use the ash_ai server for all domain model interactions
+- Prefer MCP tool calls over direct database or API access
+- Cache tool responses appropriately to avoid redundant calls
+
 ## Testing
 
 When testing AI components:
@@ -292,3 +340,4 @@ When testing AI components:
 - Test vector search with known embeddings
 - For prompt-backed actions, consider using deterministic test models
 - Verify tool access and permissions work as expected
+- Test MCP server connectivity and tool availability in development environment

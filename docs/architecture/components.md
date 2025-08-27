@@ -12,9 +12,9 @@ Based on the architectural patterns, tech stack, and data models defined above, 
 - `XPando.MotherCore.distribute_knowledge/1` - Propagate validated knowledge to network
 - `XPando.MotherCore.query_knowledge/2` - Intelligent knowledge retrieval with confidence scoring
 
-**Dependencies:** PostgreSQL via ash_postgres, Redis caching, Phoenix PubSub for distribution
+**Dependencies:** PostgreSQL via ash_postgres, ash_ai for AI integrations, Redis caching, Phoenix PubSub for distribution
 
-**Technology Stack:** GenServer supervision tree, Ash Resources for persistence, Broadway pipelines for async processing
+**Technology Stack:** GenServer supervision tree, Ash Resources for persistence, ash_ai for MCP servers, Broadway pipelines for async processing
 
 ```elixir
 defmodule XPando.MotherCore do
