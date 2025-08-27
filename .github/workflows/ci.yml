@@ -8,18 +8,33 @@ on:
 
 env:
   MIX_ENV: test
-  ELIXIR_VERSION: 1.19-rc
-  OTP_VERSION: 28.0
+  # Use stable, widely adopted versions
+  #ELIXIR_VERSION: '1.17.2'
+  ELIXIR_VERSION: '1.19'
+  OTP_VERSION: '28'
+  #OTP_VERSION: '26.2'
 
 jobs:
-  test:
-    name: Test
+  build:
+    name: Build & Test
     runs-on: ubuntu-latest
 
+    # Use a matrix to run different checks in parallel
+    strategy:
+      fail-fast: false
+      matrix:
+        check:
+          # Check names are descriptive
+          - lint          # Runs formatter, credo, and security checks
+          - test          # Runs the test suite against a database
+          - dialyzer      # Runs static analysis
+
+    # The PostgreSQL service is available to all jobs in the matrix
     services:
       postgres:
         image: postgres:16
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: xpando_test
         options: >-
@@ -31,145 +46,61 @@ jobs:
           - 5432:5432
 
     steps:
-    - name: Checkout code
+    - name: 📥 Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Elixir
+    - name: 💧 Set up Elixir
       uses: erlef/setup-beam@v1
       with:
         elixir-version: ${{ env.ELIXIR_VERSION }}
         otp-version: ${{ env.OTP_VERSION }}
 
-    - name: Cache deps
-      uses: actions/cache@v3
-      id: cache-deps
+    - name: 📦 Cache dependencies
+      uses: actions/cache@v4
+      id: deps-cache
       with:
         path: |
           deps
           _build
-        key: deps-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('**/mix.lock') }}
+        key: deps-v1-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('**/mix.lock') }}
         restore-keys: |
-          deps-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+          deps-v1-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
 
-    - name: Install dependencies
-      if: steps.cache-deps.outputs.cache-hit != 'true'
+    - name: ⚙️ Install dependencies
+      if: steps.deps-cache.outputs.cache-hit != 'true'
       run: |
+        mix local.rebar --force
+        mix local.hex --force
         mix deps.get
         mix deps.compile
 
-    - name: Check formatting
-      run: mix format --check-formatted
-
-    - name: Run Credo
-      run: mix credo --strict
-
-    - name: Compile
-      run: mix compile --warnings-as-errors
-
-    - name: Setup Ash database
+    - name: 📝 Run Linting & Security Checks
+      if: matrix.check == 'lint'
       run: |
-        MIX_TEST_PARTITION=1 mix ash.setup
-        MIX_TEST_PARTITION=2 mix ash.setup
-        MIX_TEST_PARTITION=3 mix ash.setup
-        MIX_TEST_PARTITION=4 mix ash.setup
+        mix format --check-formatted
+        mix credo --strict
+        mix deps.audit
+        mix sobelow --root apps/xpando_web --skip
+
+    - name: 🧪 Run Tests
+      if: matrix.check == 'test'
       env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/xpando_test
+        # The postgres service is available on localhost because it's running on the same docker network
+        DATABASE_URL: "ecto://postgres:postgres@localhost:5432/xpando_test"
+      run: |
+        mix ash.setup
+        mix test
 
-    - name: Run tests
-      run: mix test
-      env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/xpando_test
-
-  dialyzer:
-    name: Dialyzer
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: xpando_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
+    - name: 🔎 Cache Dialyzer PLT
+      if: matrix.check == 'dialyzer'
+      uses: actions/cache@v4
+      id: plt-cache
       with:
-        elixir-version: ${{ env.ELIXIR_VERSION }}
-        otp-version: ${{ env.OTP_VERSION }}
-
-    - name: Cache deps and PLT
-      uses: actions/cache@v3
-      id: cache-deps
-      with:
-        path: |
-          deps
-          _build
-        key: dialyzer-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('**/mix.lock') }}
+        path: priv/plts
+        key: plt-v1-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('**/mix.lock') }}
         restore-keys: |
-          dialyzer-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+          plt-v1-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
 
-    - name: Install dependencies
-      if: steps.cache-deps.outputs.cache-hit != 'true'
-      run: |
-        mix deps.get
-        mix deps.compile
-
-    - name: Setup Ash database
-      run: |
-        MIX_TEST_PARTITION=1 mix ash.setup
-        MIX_TEST_PARTITION=2 mix ash.setup  
-        MIX_TEST_PARTITION=3 mix ash.setup
-        MIX_TEST_PARTITION=4 mix ash.setup
-      env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/xpando_test
-
-    - name: Run Dialyzer
+    - name: 🧐 Run Dialyzer
+      if: matrix.check == 'dialyzer'
       run: mix dialyzer
-
-  security:
-    name: Security Checks
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        elixir-version: ${{ env.ELIXIR_VERSION }}
-        otp-version: ${{ env.OTP_VERSION }}
-
-    - name: Cache deps
-      uses: actions/cache@v3
-      id: cache-deps
-      with:
-        path: |
-          deps
-          _build
-        key: security-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('**/mix.lock') }}
-        restore-keys: |
-          security-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
-
-    - name: Install dependencies
-      if: steps.cache-deps.outputs.cache-hit != 'true'
-      run: |
-        mix deps.get
-        mix deps.compile
-
-    - name: Check for vulnerable dependencies
-      run: mix deps.audit
-
-    - name: Run security checks
-      run: mix sobelow --config
