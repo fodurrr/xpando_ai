@@ -84,17 +84,17 @@ jobs:
     - name: 🧪 Run Tests
       if: matrix.check == 'test'
       env:
-        # The postgres service is available on localhost because it's running on the same docker network
-        DATABASE_URL: "ecto://postgres:postgres@localhost:5432/xpando_test"
+        # It's best practice to use the service name as the hostname
+        DATABASE_URL: "ecto://postgres:postgres@postgres:5432/xpando_test"
       run: |
-        # Ensure project is compiled before database setup
-        mix deps.compile
-        mix compile
-        # Set up the test database with proper setup
-        MIX_ENV=test mix ash.setup
+        # Ensure project is compiled
+        mix compile --warnings-as-errors
+        
+        # Create, migrate, and seed the test database
+        mix ecto.setup
+        
         # Run tests
         mix test
-
     # - name: 🔎 Cache Dialyzer PLT
     #   if: matrix.check == 'dialyzer'
     #   uses: actions/cache@v4
