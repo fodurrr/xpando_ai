@@ -37,7 +37,7 @@ defmodule XPando.DataCase do
 
   def setup_sandbox(tags) do
     pid = Sandbox.start_owner!(XPando.Repo, shared: not tags[:async])
-    on_exit(fn -> Sandbox.stop_owner(pid) end)
+    ExUnit.Callbacks.on_exit(fn -> Sandbox.stop_owner(pid) end)
   end
 
   def errors_on(changeset) do

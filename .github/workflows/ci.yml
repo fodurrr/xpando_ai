@@ -66,23 +66,31 @@ jobs:
     - name: Compile
       run: mix compile --warnings-as-errors
 
-    - name: Create database
-      run: mix ecto.create
-
-    - name: Run migrations
-      run: mix ecto.migrate
+    - name: Setup Ash database
+      run: mix ash.setup
 
     - name: Run tests
-      run: mix test --cover --export-coverage default
+      run: mix test
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/xpando_test
-
-    - name: Generate coverage report
-      run: mix test.coverage
 
   dialyzer:
     name: Dialyzer
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xpando_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
     - name: Checkout code
@@ -111,6 +119,11 @@ jobs:
       run: |
         mix deps.get
         mix deps.compile
+
+    - name: Setup Ash database
+      run: mix ash.setup
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/xpando_test
 
     - name: Run Dialyzer
       run: mix dialyzer

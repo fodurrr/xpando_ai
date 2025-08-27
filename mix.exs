@@ -38,17 +38,30 @@ defmodule XPando.MixProject do
 
   defp aliases do
     [
-      # Database
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      # Database (Ash-first approach)
+      setup: ["ash.setup"],
+      reset: ["ash.setup"],
+      test: ["ash.setup --quiet", "test"],
       "assets.deploy": ["phx.digest"],
+
+      # Development workflow
+      "db.setup": ["ash.setup"],
+      "db.reset": ["ash.setup"],
+
+      # Ash-specific commands  
+      "ash.generate": ["ash_postgres.generate_migrations"],
+      "ash.gen": ["ash_postgres.generate_migrations"],
 
       # Quality & CI checks
       quality: ["format", "credo --strict", "compile"],
-      "quality.full": ["format", "credo --strict", "compile", "test", "deps.audit"],
+      "quality.full": ["format", "credo --strict", "compile", "dialyzer", "test", "deps.audit"],
       "ci.local": ["format --check-formatted", "credo --strict", "compile --warnings-as-errors"],
-      "ci.prepare": ["deps.get", "format", "credo --strict", "compile"]
+      "ci.prepare": ["deps.get", "format", "credo --strict", "compile"],
+
+      # Deprecated aliases (for migration period)
+      "ecto.setup": ["ash.setup"],
+      "ecto.reset": ["ash.setup"],
+      "ecto.migrate": ["ash.setup"]
     ]
   end
 end
