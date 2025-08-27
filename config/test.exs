@@ -5,7 +5,7 @@ config :xpando_core, XPando.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "xpando_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "xpando_test",
   port: 5432,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
