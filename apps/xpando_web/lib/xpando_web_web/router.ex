@@ -14,13 +14,11 @@ defmodule XpandoWebWeb.Router do
     plug :accepts, ["json"]
   end
 
-
   scope "/", XpandoWebWeb do
     pipe_through :browser
 
     get "/", PageController, :home
   end
-
 
   # Other scopes may use custom stacks.
   # scope "/api", XpandoWebWeb do
@@ -42,7 +40,5 @@ defmodule XpandoWebWeb.Router do
       live_dashboard "/dashboard", metrics: XpandoWebWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
-
-
   end
 end
