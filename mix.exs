@@ -9,6 +9,7 @@ defmodule XPando.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       releases: [
         xpando: [
           version: "0.1.0",
@@ -62,6 +63,15 @@ defmodule XPando.MixProject do
       "ecto.setup": ["ash.setup"],
       "ecto.reset": ["ash.setup"],
       "ecto.migrate": ["ash.setup"]
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_add_apps: [:ex_unit, :mix],
+      plt_core_path: "priv/plts",
+      plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+      ignore_warnings: ".dialyzer_ignore.exs"
     ]
   end
 end
