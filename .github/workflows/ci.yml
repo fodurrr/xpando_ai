@@ -69,7 +69,6 @@ jobs:
     - name: Setup Ash database
       run: |
         mix ash.setup
-        mix ash_postgres.migrate
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/xpando_test
 
@@ -127,7 +126,6 @@ jobs:
     - name: Setup Ash database
       run: |
         mix ash.setup
-        mix ash_postgres.migrate
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/xpando_test
 
