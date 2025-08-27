@@ -1,0 +1,108 @@
+# Custom ignore folders
+.ignore/
+
+# Elixir
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+*.beam
+/config/*.secret.exs
+.elixir_ls/
+
+# Ash Framework
+/release/
+**/test/tmp/
+/.ash_registry/
+/priv/repo/migrations/.gitkeep
+
+# Phoenix
+/priv/static/assets/
+/priv/static/cache_manifest.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+build/
+*.tgz
+*.tar.gz
+
+# Environment and secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.secret.exs
+.secrets/
+
+# Logs
+logs/
+*.log
+log/
+
+# OS and IDE
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# VS Code
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/tasks.json
+
+# JetBrains IDEs
+.idea/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# AI/ML artifacts
+.bmad-core/
+.claude/
+.gemini/
+.qwen/
+
+# DevBox and containers
+.devcontainer/
+.devbox/
+
+# Testing
+/cover/
+coverage/
+.nyc_output/
+
+# Build artifacts
+*.o
+*.so
+*.a
+*.exe
+*.dll
+
+# Package managers
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
