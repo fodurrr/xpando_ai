@@ -13,7 +13,7 @@ This comprehensive fullstack architecture document defines a **distributed AI co
 
 ## **Technology Stack Validation:**
 
-- **Latest Versions**: Elixir 1.18+, OTP 28+, Phoenix LiveView 1.1+, Ash Framework 3.5+
+- **Latest Versions**: Elixir 1.18.1, OTP 27.2, Phoenix LiveView 1.1+, Ash Framework 3.5+
 - **Performance Optimized**: gRPC for external APIs, Redis caching, PostgreSQL with optimized indexes
 - **Production Ready**: Comprehensive error handling, circuit breakers, and monitoring capabilities
 

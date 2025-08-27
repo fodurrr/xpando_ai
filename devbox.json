@@ -1,9 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.15.1/.schema/devbox.schema.json",
   "packages": [
-    "elixir@latest",
     "nodejs@latest",
     "pnpm@latest",
+    "erlang@27.2",
+    "elixir@1.18.1",
     "claude-code@latest"
   ],
   "shell": {

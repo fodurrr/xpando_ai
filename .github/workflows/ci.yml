@@ -10,8 +10,8 @@ env:
   MIX_ENV: test
   # Use stable, widely adopted versions
   #ELIXIR_VERSION: '1.17.2'
-  ELIXIR_VERSION: '1.19'
-  OTP_VERSION: '28'
+  ELIXIR_VERSION: '1.18.1'
+  OTP_VERSION: '27.2'
   #OTP_VERSION: '26.2'
 
 jobs:
