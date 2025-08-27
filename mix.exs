@@ -9,6 +9,7 @@ defmodule XPando.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       releases: [
         xpando: [
           version: "0.1.0",
@@ -33,6 +34,21 @@ defmodule XPando.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+      plt_add_apps: [:ex_unit, :mix],
+      flags: [:error_handling, :missing_return],
+      ignore_warnings: ".dialyzer_ignore.exs",
+      paths: [
+        "_build/test/lib/xpando_core/ebin",
+        "_build/test/lib/xpando_web/ebin",
+        "_build/test/lib/xpando_node/ebin"
+      ],
+      checks: [:error_handling, :missing_return]
     ]
   end
 

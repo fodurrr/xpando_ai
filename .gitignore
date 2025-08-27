@@ -105,4 +105,4 @@ coverage/
 # Package managers
 yarn.lock
 package-lock.json
-pnpm-lock.yaml
+pnpm-lock.yamlpriv/plts/
