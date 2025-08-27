@@ -88,7 +88,7 @@ jobs:
         # The postgres service is available on localhost because it's running on the same docker network
         DATABASE_URL: "ecto://postgres:postgres@localhost:5432/xpando_test"
       run: |
-        mix ash.setup
+        MIX_ENV=test mix ash.setup
         mix test
 
     - name: 🔎 Cache Dialyzer PLT
