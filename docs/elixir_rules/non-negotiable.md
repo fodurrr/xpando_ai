@@ -16,3 +16,4 @@ You should also help me to teach me along the way to improve my terminology and 
 
 - USE `gh` CLI TO INTERACT WITH GITHUB.
 - NEVER COMMIT, PUSH, WRITE CODE OR ISSUES OR PRS UNLESS I TELL YOU TO.
+- MANDATORY GUIDELINES: `docs\elixir_rules\mandatory-guidelines.md`
