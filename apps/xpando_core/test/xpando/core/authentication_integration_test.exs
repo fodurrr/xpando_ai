@@ -4,7 +4,7 @@ defmodule XPando.Core.AuthenticationIntegrationTest do
   Tests user registration, login, token management, and node operations.
   """
   use XPando.DataCase, async: true
-  alias XPando.Core.{User, Node, Knowledge}
+  alias XPando.Core.{Knowledge, Node, User}
 
   describe "Complete authentication flow" do
     test "user registration, authentication, and node operations" do
@@ -38,7 +38,7 @@ defmodule XPando.Core.AuthenticationIntegrationTest do
       assert is_binary(token)
       assert claims["sub"] =~ to_string(authenticated_user.id)
 
-      # Verify token can be used to retrieve user  
+      # Verify token can be used to retrieve user
       {:ok, verified_claims, _verified_user} = AshAuthentication.Jwt.verify(token, User)
       assert verified_claims["sub"] =~ to_string(authenticated_user.id)
       assert is_binary(verified_claims["sub"])

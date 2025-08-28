@@ -3,8 +3,8 @@ defmodule XPando.Core.UserTest do
   Tests for the User resource including authentication functionality.
   """
   use XPando.DataCase, async: true
-  alias XPando.Core.User
   alias XPando.Core.Node
+  alias XPando.Core.User
 
   describe "User resource" do
     test "creates a user with valid attributes" do

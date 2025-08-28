@@ -55,7 +55,7 @@ defmodule XPando.DataCase do
 
     # Create proper Ed25519 signature for the endpoint message
     message_to_sign = endpoint
-    signature = :crypto.sign(:eddsa, :ed25519, message_to_sign, [private_key, :ed25519])
+    signature = :crypto.sign(:eddsa, :none, message_to_sign, [private_key, :ed25519])
 
     %{
       public_key: Base.encode64(public_key),

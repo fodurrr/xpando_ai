@@ -197,7 +197,7 @@ defmodule XPando.TestGenerators do
     # Create a temporary key pair for signature generation
     {_public, private} = :crypto.generate_key(:eddsa, :ed25519)
     message = "test-signature-#{:rand.uniform(100_000)}"
-    signature = :crypto.sign(:eddsa, :ed25519, message, [private, :ed25519])
+    signature = :crypto.sign(:eddsa, :none, message, [private, :ed25519])
     Base.encode64(signature)
   end
 

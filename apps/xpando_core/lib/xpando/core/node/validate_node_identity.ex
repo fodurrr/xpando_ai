@@ -59,29 +59,27 @@ defmodule XPando.Core.Node.ValidateNodeIdentity do
   # Cryptographic signature verification using Erlang :crypto library
   @spec verify_signature(String.t(), String.t(), String.t()) :: boolean()
   defp verify_signature(message, signature, public_key) do
-    try do
-      # Decode base64-encoded signature and public key
-      decoded_signature = Base.decode64!(signature)
-      decoded_public_key = Base.decode64!(public_key)
+    # Decode base64-encoded signature and public key
+    decoded_signature = Base.decode64!(signature)
+    decoded_public_key = Base.decode64!(public_key)
 
-      # Proper Ed25519 signature verification
-      case byte_size(decoded_public_key) do
-        32 ->
-          # Use Ed25519 verification - the only cryptographically secure approach
-          # Use array format for Ed25519 key specification
-          :crypto.verify(:eddsa, :ed25519, message, decoded_signature, [
-            decoded_public_key,
-            :ed25519
-          ])
+    # Proper Ed25519 signature verification
+    case byte_size(decoded_public_key) do
+      32 ->
+        # Use Ed25519 verification - the only cryptographically secure approach
+        # Use array format for Ed25519 key specification
+        :crypto.verify(:eddsa, :none, message, decoded_signature, [
+          decoded_public_key,
+          :ed25519
+        ])
 
-        _ ->
-          # For other key types, return false for now
-          # In production, add support for RSA, ECDSA, etc.
-          false
-      end
-    rescue
-      # If decoding fails or crypto operation fails, signature is invalid
-      _ -> false
+      _ ->
+        # For other key types, return false for now
+        # In production, add support for RSA, ECDSA, etc.
+        false
     end
+  rescue
+    # If decoding fails or crypto operation fails, signature is invalid
+    _ -> false
   end
 end
