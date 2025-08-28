@@ -1,0 +1,27 @@
+{
+  "name": "xpando_ai",
+  "version": "1.0.0",
+  "description": "xPando is a decentralized platform for AI-powered collective intelligence, enabling nodes to share, validate, and contribute knowledge through a peer-to-peer network with cryptographic identity and token-based incentives.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fodurrr/xpando_ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fodurrr/xpando_ai/issues"
+  },
+  "homepage": "https://github.com/fodurrr/xpando_ai#readme",
+  "dependencies": {
+    "@google/gemini-cli": "^0.2.2"
+  }
+}

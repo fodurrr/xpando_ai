@@ -39,3 +39,17 @@ config :ash, :missed_notifications, :ignore
 
 # AshAuthentication token signing secret for testing
 config :xpando_core, :token_signing_secret, "test_secret_for_token_signing"
+
+# Configure libcluster for testing (disabled but configuration testable)
+config :libcluster,
+  topologies: [
+    test_topology: [
+      strategy: Cluster.Strategy.Gossip,
+      config: [
+        port: 45893,
+        if_addr: "127.0.0.1",
+        multicast_addr: "230.1.1.252",
+        multicast_ttl: 1
+      ]
+    ]
+  ]

@@ -23,7 +23,7 @@ defmodule XpandoWeb.MixProject do
   def application do
     [
       mod: {XpandoWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools, :xpando_core]
+      extra_applications: [:logger, :runtime_tools, :xpando_core, :xpando_node]
     ]
   end
 
@@ -61,7 +61,9 @@ defmodule XpandoWeb.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:tidewave, "~> 0.4", only: [:dev]},
-      {:ash_ai, "~> 0.2", only: [:dev]}
+      {:ash_ai, "~> 0.2", only: [:dev]},
+      {:xpando_core, in_umbrella: true},
+      {:xpando_node, in_umbrella: true}
     ]
   end
 
