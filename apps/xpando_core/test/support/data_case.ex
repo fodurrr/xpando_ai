@@ -47,4 +47,19 @@ defmodule XPando.DataCase do
       end)
     end)
   end
+
+  # Helper to generate valid Ed25519 key-signature pairs for proper registration tests
+  def generate_valid_node_identity(endpoint) do
+    # Generate real Ed25519 key pair for proper cryptographic testing
+    {public_key, private_key} = :crypto.generate_key(:eddsa, :ed25519)
+
+    # Create proper Ed25519 signature for the endpoint message
+    message_to_sign = endpoint
+    signature = :crypto.sign(:eddsa, :ed25519, message_to_sign, [private_key, :ed25519])
+
+    %{
+      public_key: Base.encode64(public_key),
+      signature: Base.encode64(signature)
+    }
+  end
 end

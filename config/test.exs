@@ -36,3 +36,6 @@ config :phoenix_live_view,
 # Ash testing configuration
 config :ash, :disable_async?, true
 config :ash, :missed_notifications, :ignore
+
+# AshAuthentication token signing secret for testing
+config :xpando_core, :token_signing_secret, "test_secret_for_token_signing"

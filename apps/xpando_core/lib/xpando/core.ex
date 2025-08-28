@@ -12,5 +12,7 @@ defmodule XPando.Core do
     resource(XPando.Core.Node)
     resource(XPando.Core.Knowledge)
     resource(XPando.Core.Contribution)
+    resource(XPando.Core.Token)
+    resource(XPando.Core.User)
   end
 end

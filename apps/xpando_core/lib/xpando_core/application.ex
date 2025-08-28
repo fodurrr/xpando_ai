@@ -6,7 +6,8 @@ defmodule XPandoCore.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      XPando.Repo
+      XPando.Repo,
+      {AshAuthentication.Supervisor, otp_app: :xpando_core}
     ]
 
     opts = [strategy: :one_for_one, name: XPandoCore.Supervisor]

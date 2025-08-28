@@ -83,3 +83,6 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+# AshAuthentication token signing secret for development
+config :xpando_core, :token_signing_secret, "dev_secret_for_token_signing_replace_in_production"

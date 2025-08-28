@@ -9,7 +9,6 @@ defmodule XPando.Core.Node do
   use Ash.Resource,
     domain: XPando.Core,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication],
     authorizers: [Ash.Policy.Authorizer]
 
   require Ash.Query
@@ -25,6 +24,12 @@ defmodule XPando.Core.Node do
 
   attributes do
     uuid_primary_key(:id)
+
+    attribute :node_id, :string do
+      description("Unique cryptographic node identifier")
+      allow_nil?(false)
+      constraints(max_length: 64)
+    end
 
     attribute :name, :string do
       description("Human-readable node identifier")
@@ -155,16 +160,41 @@ defmodule XPando.Core.Node do
     defaults([:create, :read, :update, :destroy])
 
     create :register do
-      description("Register a new node in the network")
+      description("Register a new node in the network with identity verification")
 
+      argument(:name, :string, allow_nil?: false)
       argument(:endpoint, :string, allow_nil?: false)
       argument(:public_key, :string, allow_nil?: false)
       argument(:signature, :string, allow_nil?: false)
 
+      # Map arguments to attributes
+      change(set_attribute(:name, arg(:name)))
+      change(set_attribute(:endpoint, arg(:endpoint)))
+      change(set_attribute(:public_key, arg(:public_key)))
       change(set_attribute(:status, :active))
       change(set_attribute(:last_seen_at, &DateTime.utc_now/0))
 
+      change(fn changeset, _context ->
+        # Generate unique node_id from public key hash
+        public_key = Ash.Changeset.get_argument(changeset, :public_key)
+        # Decode base64 public key before hashing to ensure consistency
+        decoded_public_key = Base.decode64!(public_key)
+        node_id = :crypto.hash(:sha256, decoded_public_key) |> Base.encode16(case: :lower)
+
+        # Map signature argument to node_signature attribute and generate private key hash
+        signature = Ash.Changeset.get_argument(changeset, :signature)
+
+        private_key_hash =
+          :crypto.hash(:sha256, "temp_private_key") |> Base.encode16(case: :lower)
+
+        changeset
+        |> Ash.Changeset.change_attribute(:node_id, node_id)
+        |> Ash.Changeset.change_attribute(:node_signature, signature)
+        |> Ash.Changeset.change_attribute(:private_key_hash, private_key_hash)
+      end)
+
       validate(attribute_equals(:status, :active))
+      validate({XPando.Core.Node.ValidateNodeIdentity, []})
     end
 
     update :update_reputation do
@@ -175,18 +205,25 @@ defmodule XPando.Core.Node do
       argument(:validation_result, :boolean, allow_nil?: false)
 
       change(set_attribute(:reputation_score, arg(:new_reputation)))
-      change(increment(:total_validations, amount: 1))
 
       change(fn changeset, _context ->
-        if Ash.Changeset.get_argument(changeset, :validation_result) do
-          Ash.Changeset.change_attribute(
-            changeset,
-            :successful_validations,
-            (Ash.Changeset.get_attribute(changeset, :successful_validations) || 0) + 1
-          )
-        else
-          changeset
-        end
+        # Get current values from the record
+        current_total = Ash.Changeset.get_attribute(changeset, :total_validations) || 0
+        current_successful = Ash.Changeset.get_attribute(changeset, :successful_validations) || 0
+
+        # Increment both atomically
+        new_total = current_total + 1
+
+        new_successful =
+          if Ash.Changeset.get_argument(changeset, :validation_result) do
+            current_successful + 1
+          else
+            current_successful
+          end
+
+        changeset
+        |> Ash.Changeset.change_attribute(:total_validations, new_total)
+        |> Ash.Changeset.change_attribute(:successful_validations, new_successful)
       end)
     end
 
@@ -246,6 +283,11 @@ defmodule XPando.Core.Node do
       source_attribute(:id)
       destination_attribute(:node_id)
     end
+
+    has_one :user, XPando.Core.User do
+      source_attribute(:id)
+      destination_attribute(:node_id)
+    end
   end
 
   preparations do
@@ -295,19 +337,23 @@ defmodule XPando.Core.Node do
     end
 
     policy action(:read) do
-      description("Anyone can read public node information")
+      description(
+        "Anyone can read public node information, authenticated users can see owned nodes"
+      )
+
       authorize_if(always())
     end
 
     policy action_type(:create) do
-      description("New nodes can self-register with valid cryptographic proof")
-      authorize_if(always())
+      description("Only node operators and admins can register nodes")
+      authorize_if(actor_attribute_equals(:role, :node_operator))
+      authorize_if(actor_attribute_equals(:role, :admin))
     end
 
     policy action_type(:update) do
-      description("Only the node itself or system can update node data")
-      authorize_if(relates_to_actor_via(:id))
-      authorize_if(actor_attribute_equals(:role, :system))
+      description("Only the node owner or admin can update node data")
+      authorize_if(relates_to_actor_via([:user]))
+      authorize_if(actor_attribute_equals(:role, :admin))
     end
 
     policy action(:destroy) do
@@ -317,6 +363,10 @@ defmodule XPando.Core.Node do
   end
 
   identities do
+    identity :unique_node_id, [:node_id] do
+      description("Each node must have a unique cryptographic node ID")
+    end
+
     identity :unique_public_key, [:public_key] do
       description("Each node must have a unique public key")
     end
