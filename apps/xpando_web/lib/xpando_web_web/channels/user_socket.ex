@@ -53,13 +53,13 @@ defmodule XpandoWebWeb.UserSocket do
         case XPando.Core.User
              |> Ash.Query.for_read(:get_by_subject, %{subject: subject})
              |> Ash.read_one() do
-          {:ok, user} -> {:ok, user}
+          {:ok, user} when not is_nil(user) -> {:ok, user}
+          {:ok, nil} -> {:error, :user_not_found}
           {:error, _} -> {:error, :user_not_found}
-          nil -> {:error, :user_not_found}
         end
 
-      {:error, reason} ->
-        {:error, reason}
+      _ ->
+        {:error, :invalid_token}
     end
   end
 end
