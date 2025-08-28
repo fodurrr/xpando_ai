@@ -4,7 +4,6 @@ defmodule XPando.Core.KnowledgeTest do
   describe "Knowledge resource" do
     test "can create knowledge using fast_knowledge" do
       knowledge = fast_knowledge()
-
       assert knowledge.id
       assert knowledge.title
       assert knowledge.content
@@ -32,18 +31,15 @@ defmodule XPando.Core.KnowledgeTest do
       # Use the default content from fast_knowledge to ensure hash matches
       knowledge = fast_knowledge()
       expected_content = "Fast test knowledge content"
-
       expected_hash = :crypto.hash(:sha256, expected_content) |> Base.encode16(case: :lower)
       assert knowledge.content_hash == expected_hash
     end
 
     test "can read knowledge" do
       knowledge = fast_knowledge()
-
       # Try reading through the domain
       found_knowledge = Ash.read!(XPando.Core.Knowledge, domain: XPando.Core)
       knowledge_ids = Enum.map(found_knowledge, & &1.id)
-
       assert knowledge.id in knowledge_ids
     end
 
@@ -56,7 +52,6 @@ defmodule XPando.Core.KnowledgeTest do
 
       knowledge = Ash.read!(query, domain: XPando.Core)
       knowledge_ids = Enum.map(knowledge, & &1.id)
-
       assert tech_knowledge.id in knowledge_ids
     end
 
@@ -69,7 +64,6 @@ defmodule XPando.Core.KnowledgeTest do
 
       knowledge = Ash.read!(query, domain: XPando.Core)
       knowledge_ids = Enum.map(knowledge, & &1.id)
-
       assert validated_knowledge.id in knowledge_ids
     end
   end

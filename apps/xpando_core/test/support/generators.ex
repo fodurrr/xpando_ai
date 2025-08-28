@@ -102,12 +102,16 @@ defmodule XPando.TestGenerators do
 
   # Fast generators using Ash.Seed for when you need speed over business logic
   def fast_node(attrs \\ %{}) do
+    public_key = generate_public_key()
+    node_id = :crypto.hash(:sha256, public_key) |> Base.encode16(case: :lower)
+
     Ash.Seed.seed!(
       XPando.Core.Node,
       Map.merge(
         %{
           name: "fast-node-#{:rand.uniform(1000)}",
-          public_key: generate_public_key(),
+          public_key: public_key,
+          node_id: node_id,
           private_key_hash: generate_hash(),
           node_signature: generate_signature(),
           endpoint: "https://fast-test-#{:rand.uniform(100_000)}.xpando.network",
@@ -177,9 +181,11 @@ defmodule XPando.TestGenerators do
     )
   end
 
-  # Helper functions
+  # Helper functions - For fast_node() that bypasses validation
   defp generate_public_key do
-    :crypto.strong_rand_bytes(64) |> Base.encode64()
+    # Generate Ed25519 key pair for valid signatures
+    {public_key, _private_key} = :crypto.generate_key(:eddsa, :ed25519)
+    Base.encode64(public_key)
   end
 
   defp generate_hash do
@@ -187,6 +193,22 @@ defmodule XPando.TestGenerators do
   end
 
   defp generate_signature do
-    :crypto.strong_rand_bytes(128) |> Base.encode64()
+    # Generate a valid Ed25519 signature for testing
+    # Create a temporary key pair for signature generation
+    {_public, private} = :crypto.generate_key(:eddsa, :ed25519)
+    message = "test-signature-#{:rand.uniform(100_000)}"
+    signature = :crypto.sign(:eddsa, :ed25519, message, [private, :ed25519])
+    Base.encode64(signature)
+  end
+
+  # Helper to generate valid Ed25519 key-signature pairs for proper registration tests
+  def generate_valid_node_identity(endpoint) do
+    {public_key, private_key} = :crypto.generate_key(:eddsa, :ed25519)
+    signature = :crypto.sign(:eddsa, :ed25519, endpoint, [private_key])
+
+    %{
+      public_key: Base.encode64(public_key),
+      signature: Base.encode64(signature)
+    }
   end
 end

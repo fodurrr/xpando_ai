@@ -10,6 +10,7 @@ defmodule XPando.MixProject do
       deps: deps(),
       aliases: aliases(),
       dialyzer: dialyzer(),
+      listeners: [Phoenix.CodeReloader],
       releases: [
         xpando: [
           version: "0.1.0",

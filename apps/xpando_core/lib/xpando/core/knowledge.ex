@@ -194,6 +194,10 @@ defmodule XPando.Core.Knowledge do
       argument(:knowledge_type, :atom, allow_nil?: true)
 
       change(set_attribute(:submitter_id, arg(:submitter_node_id)))
+      change(set_attribute(:content, arg(:content)))
+      change(set_attribute(:title, arg(:title)))
+      change(set_attribute(:category, arg(:category)))
+      change(set_attribute(:knowledge_type, arg(:knowledge_type)))
 
       change(fn changeset, _context ->
         content = Ash.Changeset.get_argument(changeset, :content)
@@ -440,14 +444,16 @@ defmodule XPando.Core.Knowledge do
     end
 
     policy action(:read) do
-      description("Anyone can read validated knowledge")
+      description("Anyone can read validated knowledge, submitters can read their own")
       authorize_if(expr(validation_status == :validated))
-      authorize_if(relates_to_actor_via(:submitter))
+      authorize_if(relates_to_actor_via([:submitter, :user]))
+      authorize_if(actor_attribute_equals(:role, :admin))
     end
 
     policy action_type(:create) do
-      description("Authenticated nodes can submit knowledge")
-      authorize_if(actor_attribute_equals(:status, :active))
+      description("Node operators can submit knowledge")
+      authorize_if(actor_attribute_equals(:role, :node_operator))
+      authorize_if(actor_attribute_equals(:role, :admin))
     end
 
     policy action_type(:update) do
