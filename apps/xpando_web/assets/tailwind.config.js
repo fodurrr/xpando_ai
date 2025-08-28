@@ -19,8 +19,26 @@ module.exports = {
     },
   },
   daisyui: {
-    themes: ["light", "dark", "cupcake", "cyberpunk"],
-    darkTheme: "dark",
+    themes: [
+      {
+        "synthwave-light": {
+          "primary": "oklch(71% 0.202 349.761)",
+          "secondary": "oklch(82% 0.111 230.318)",
+          "accent": "oklch(75% 0.183 55.934)",
+          "neutral": "oklch(45% 0.24 277.023)",
+          "base-100": "oklch(95% 0.02 281.288)",
+          "base-200": "oklch(90% 0.03 281.288)",
+          "base-300": "oklch(85% 0.04 281.288)",
+          "base-content": "oklch(25% 0.115 274.713)",
+          "info": "oklch(74% 0.16 232.661)",
+          "success": "oklch(77% 0.152 181.912)",
+          "warning": "oklch(90% 0.182 98.111)",
+          "error": "oklch(73.7% 0.121 32.639)",
+        },
+      },
+      "synthwave"
+    ],
+    darkTheme: "synthwave",
     base: true,
     styled: true,
     utils: true,

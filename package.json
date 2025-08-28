@@ -23,6 +23,7 @@
   "homepage": "https://github.com/fodurrr/xpando_ai#readme",
   "dependencies": {
     "@anthropic-ai/claude-code": "^1.0.96",
-    "@google/gemini-cli": "^0.2.2"
+    "@google/gemini-cli": "^0.2.2",
+    "@playwright/mcp": "^0.0.35"
   }
 }

@@ -7,6 +7,16 @@
     "ash_ai": {
       "type": "http",
       "url": "http://localhost:4000/ash_ai/mcp"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp",
+        "--browser",
+        "msedge"
+      ],
+      "env": {}
     }
   }
 }

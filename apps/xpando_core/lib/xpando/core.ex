@@ -14,5 +14,6 @@ defmodule XPando.Core do
     resource(XPando.Core.Contribution)
     resource(XPando.Core.Token)
     resource(XPando.Core.User)
+    resource(XPando.Core.Newsletter)
   end
 end
