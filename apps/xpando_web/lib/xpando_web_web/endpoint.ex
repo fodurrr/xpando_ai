@@ -25,10 +25,26 @@ defmodule XpandoWebWeb.Endpoint do
     gzip: false,
     only: XpandoWebWeb.static_paths()
 
+  # Tidewave MCP server
+  if Code.ensure_loaded?(Tidewave) do
+    plug Tidewave
+  end
+
+  # Ash AI MCP Server
+  if Code.ensure_loaded?(AshAi.Mcp.Dev) do
+    plug AshAi.Mcp.Dev
+  end
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+
+    plug AshAi.Mcp.Dev,
+      # see the note below on protocol versions below
+      protocol_version_statement: "2024-11-05",
+      otp_app: :xpando_web
+
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
   end

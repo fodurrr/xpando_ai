@@ -23,7 +23,7 @@ defmodule XpandoWeb.MixProject do
   def application do
     [
       mod: {XpandoWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :xpando_core]
     ]
   end
 
@@ -36,6 +36,7 @@ defmodule XpandoWeb.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:usage_rules, "~> 0.1"},
       {:phoenix, "~> 1.8.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -58,7 +59,9 @@ defmodule XpandoWeb.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:tidewave, "~> 0.4", only: [:dev]},
+      {:ash_ai, "~> 0.2", only: [:dev]}
     ]
   end
 

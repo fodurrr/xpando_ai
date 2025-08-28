@@ -29,11 +29,11 @@ defmodule XPando.MixProject do
       {:ash_authentication, "~> 4.9"},
       {:ash_postgres, "~> 2.6"},
       {:ash, "~> 3.5"},
-      {:igniter, "~> 0.6", only: [:dev, :test]},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false}
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
+      {:file_system, "~> 0.2", only: [:dev, :test]}
     ]
   end
 
@@ -49,7 +49,7 @@ defmodule XPando.MixProject do
       "db.setup": ["ash.setup"],
       "db.reset": ["ash.setup"],
 
-      # Ash-specific commands  
+      # Ash-specific commands
       "ash.generate": ["ash_postgres.generate_migrations"],
       "ash.gen": ["ash_postgres.generate_migrations"],
 
