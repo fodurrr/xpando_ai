@@ -19,6 +19,7 @@ defmodule XpandoWebWeb.Router do
 
     get "/", PageController, :home
     post "/subscribe", PageController, :subscribe
+    get "/app", PageController, :app
   end
 
   # Other scopes may use custom stacks.

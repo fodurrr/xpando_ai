@@ -27,4 +27,9 @@ defmodule XpandoWebWeb.PageController do
         render(conn, :home, layout: false, form: to_form(form))
     end
   end
+
+  def app(conn, _params) do
+    # Temporary app page - to be replaced with actual app implementation
+    render(conn, :app, layout: false)
+  end
 end
