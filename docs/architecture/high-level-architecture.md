@@ -2,75 +2,38 @@
 
 ## Technical Summary
 
-xPando implements a distributed P2P collective intelligence platform using Elixir/OTP's actor model with Phoenix LiveView for real-time web interfaces. The architecture leverages a "Mixture of Experts" pattern where specialized AI nodes collaborate through a distributed Mother Core that aggregates and distributes knowledge using Ash Framework resources with PostgreSQL persistence. Broadway pipelines manage AI provider integrations (OpenAI, Anthropic, Google) while Solana blockchain integration enables XPD token economy. The platform deploys on Kubernetes with Fly.io for MVP, scaling to support 10,000+ concurrent nodes through BEAM VM's distributed computing capabilities and libcluster networking, achieving the PRD goal of 50% cost reduction and 10x performance improvement through collaborative intelligence.
+xPando implements a distributed peer-to-peer AI collective intelligence platform using Elixir/OTP's actor model and Phoenix LiveView for real-time web interfaces. The architecture leverages BEAM's fault-tolerant distributed computing capabilities to enable AI nodes to share knowledge through a BitTorrent-inspired protocol, with a distributed Mother Core aggregating learnings. The system integrates with multiple AI providers through Broadway pipelines and implements a Solana blockchain-based XPD token economy for incentivizing contributions. This architecture achieves the PRD goals of 50% cost reduction and 10x performance improvement through collaborative intelligence while maintaining sub-500ms inference latency.
 
 ## Platform and Infrastructure Choice
 
-Based on PRD requirements for distributed AI collaboration and blockchain integration, I'm presenting three viable platform options:
-
-**Option 1: Fly.io + Supabase + Solana Devnet (Recommended for MVP)**
-- **Pros**: Elixir-native hosting, global edge deployment, built-in clustering, PostgreSQL managed service, rapid MVP deployment
-- **Cons**: Limited enterprise features, potential scaling bottlenecks, newer platform with less mature ecosystem
-- **Cost**: ~$200-500/month for MVP scale
-
-**Option 2: AWS Full Stack (Enterprise Scale)**  
-- **Pros**: Complete enterprise ecosystem, EKS for Kubernetes, RDS PostgreSQL, comprehensive monitoring, proven at scale
-- **Cons**: Higher complexity, increased costs, over-engineered for MVP, requires more DevOps expertise
-- **Cost**: ~$1000-2000/month for equivalent scale
-
-**Option 3: Google Cloud Platform (AI/ML Optimized)**
-- **Pros**: Superior AI/ML services, Vertex AI integration potential, strong Kubernetes support, cost-effective compute
-- **Cons**: Less Elixir ecosystem support, learning curve, blockchain integration less mature
-- **Cost**: ~$600-1200/month for equivalent scale
-
-**Recommendation**: **Fly.io + Supabase + Solana Devnet** for MVP phase with AWS migration path for production scale. This choice optimizes for rapid development, Elixir ecosystem support, and cost efficiency while proving the distributed AI hypothesis.
-
-**Platform:** Fly.io (MVP) with AWS migration path  
-**Key Services:** Fly.io compute, Supabase PostgreSQL, Redis caching, S3-compatible storage, Solana RPC endpoints  
-**Deployment Host and Regions:** Global edge deployment via Fly.io with primary regions in US-East, EU-West, Asia-Pacific
+**Platform:** Hybrid Cloud (Fly.io MVP → AWS Production)
+**Key Services:** Fly.io (initial deployment), AWS EKS (production Kubernetes), S3 (knowledge storage), PostgreSQL (managed), Solana RPC nodes
+**Deployment Host and Regions:** Multi-region deployment (US-East, US-West, EU-West) for global node distribution
 
 ## Repository Structure
 
-Given the distributed AI platform requirements and Elixir ecosystem, a **monorepo approach** is optimal for xPando:
-
-**Rationale**: The tight integration between P2P networking, AI processing, web interface, and blockchain components benefits from shared code, unified testing, and coordinated deployment. Elixir umbrella applications naturally support this architecture while maintaining clear boundaries.
-
-**Structure:** Elixir Umbrella Application with clear app boundaries  
-**Monorepo Tool:** Native Elixir umbrella (no external tooling needed)  
-**Package Organization:** Core domain logic, Web interface, Node networking, and Shared utilities as separate apps
+**Structure:** Elixir Umbrella Application (Monorepo)
+**Monorepo Tool:** Mix Umbrella (native Elixir)
+**Package Organization:** Core domain (xpando_core), Web interface (xpando_web), Node runtime (xpando_node), Blockchain integration (xpando_blockchain)
 
 ## High Level Architecture Diagram
 
 ```mermaid
 graph TB
     subgraph "User Layer"
-        WEB[Web Dashboard<br/>Phoenix LiveView]
-        MOB[Mobile Interface<br/>Responsive]
+        UI[Phoenix LiveView UI]
+        API[Phoenix API]
     end
     
     subgraph "Application Layer"
-        API[Phoenix Router<br/>REST/WebSocket]
-        LV[LiveView Controllers<br/>Real-time UI]
+        WEB[xpando_web]
+        ADMIN[Admin Dashboard]
     end
     
-    subgraph "xPando Core"
-        MC[Mother Core<br/>Distributed Knowledge]
-        NS[Node Services<br/>P2P Communication]
-        AI[AI Integration<br/>Broadway Pipelines]
-        BC[Blockchain Integration<br/>XPD Tokens]
-    end
-    
-    subgraph "Data Layer"
-        PG[(PostgreSQL<br/>Ash Resources)]
-        REDIS[(Redis<br/>Caching)]
-        S3[(Object Storage<br/>Large Data)]
-    end
-    
-    subgraph "External Services"
-        OPENAI[OpenAI API]
-        ANTHROPIC[Anthropic API]
-        GOOGLE[Google AI API]
-        SOLANA[Solana Blockchain]
+    subgraph "Core Layer"
+        MC[Mother Core]
+        NS[Node Supervisor]
+        KM[Knowledge Manager]
     end
     
     subgraph "P2P Network"
@@ -79,31 +42,54 @@ graph TB
         N3[Node N...]
     end
     
-    WEB --> API
-    MOB --> API
-    API --> LV
-    LV --> MC
-    API --> NS
-    NS --> MC
-    MC --> AI
-    MC --> BC
-    AI --> OPENAI
-    AI --> ANTHROPIC
-    AI --> GOOGLE
-    BC --> SOLANA
-    MC --> PG
-    NS --> REDIS
-    AI --> S3
-    NS -.->|P2P Mesh| N1
-    NS -.->|P2P Mesh| N2
-    NS -.->|P2P Mesh| N3
+    subgraph "AI Provider Layer"
+        BP[Broadway Pipeline]
+        OAI[OpenAI Adapter]
+        ANT[Anthropic Adapter]
+        GOO[Google Adapter]
+    end
+    
+    subgraph "Storage Layer"
+        PG[(PostgreSQL)]
+        S3[S3 Storage]
+        ETS[ETS Cache]
+    end
+    
+    subgraph "Blockchain Layer"
+        SOL[Solana Network]
+        XPD[XPD Token]
+    end
+    
+    UI --> WEB
+    API --> WEB
+    WEB --> MC
+    WEB --> ADMIN
+    MC --> NS
+    MC --> KM
+    NS --> N1
+    NS --> N2
+    NS --> N3
+    N1 <--> N2
+    N2 <--> N3
+    N1 <--> N3
+    MC --> BP
+    BP --> OAI
+    BP --> ANT
+    BP --> GOO
+    KM --> PG
+    KM --> S3
+    KM --> ETS
+    WEB --> SOL
+    SOL --> XPD
 ```
 
 ## Architectural Patterns
 
-- **Event-Driven Architecture with Actor Model:** Leveraging OTP GenServers and supervision trees for fault-tolerant distributed processing - _Rationale:_ Natural fit for P2P networking and distributed AI workloads requiring resilience
-- **CQRS with Ash Resources:** Command Query Responsibility Segregation through Ash actions separating reads/writes - _Rationale:_ Optimizes performance for complex knowledge queries while maintaining write consistency  
-- **Mixture of Experts Pattern:** Specialized AI nodes collaborating on domain-specific tasks with intelligent routing - _Rationale:_ Core innovation enabling 10x performance improvement through collaborative intelligence
-- **Saga Pattern for Distributed Transactions:** Managing cross-node knowledge sharing and token distributions - _Rationale:_ Ensures consistency in distributed operations without traditional ACID constraints
-- **Publisher-Subscriber with Phoenix PubSub:** Real-time knowledge propagation and UI updates - _Rationale:_ Enables sub-second network updates and responsive user experience
-- **Circuit Breaker Pattern:** Protecting against external API failures and node unavailability - _Rationale:_ Maintains system stability when AI providers or network nodes experience issues
+- **Actor Model (OTP/GenServer):** Each AI node runs as a supervised GenServer process enabling fault tolerance and message-passing concurrency - _Rationale:_ BEAM's actor model provides built-in distribution and fault recovery essential for P2P networks
+- **Event-Driven Architecture:** Broadway pipelines process AI requests and knowledge updates asynchronously - _Rationale:_ Handles varying AI provider latencies and enables backpressure control
+- **CQRS with Event Sourcing:** Separate read/write paths for knowledge with event log persistence - _Rationale:_ Enables knowledge history tracking and Byzantine fault tolerance
+- **Hexagonal Architecture:** Core domain isolated from external dependencies via ports and adapters - _Rationale:_ Allows swapping AI providers and storage backends without core logic changes
+- **Phoenix LiveView Real-time UI:** Server-rendered reactive UI without JavaScript complexity - _Rationale:_ Reduces frontend complexity while maintaining real-time updates
+- **Repository Pattern:** Ash Resources abstract all data access - _Rationale:_ Consistent data layer with built-in authorization and validation
+- **Circuit Breaker Pattern:** Protect against cascading failures in distributed node network - _Rationale:_ Essential for maintaining system stability with thousands of nodes
+- **Mixture of Experts Architecture:** Specialized AI nodes collaborate on complex tasks - _Rationale:_ Core innovation enabling 10x performance improvement on specialized tasks

@@ -1,60 +1,37 @@
 # xPando Fullstack Architecture Document
 
-## Table of Contents
+This document outlines the complete fullstack architecture for xPando, including backend systems, frontend implementation, and their integration. It serves as the single source of truth for AI-driven development, ensuring consistency across the entire technology stack.
 
-- [xPando Fullstack Architecture Document](#table-of-contents)
-  - [Introduction](./introduction.md)
-    - [Starter Template or Existing Project](./introduction.md#starter-template-or-existing-project)
-    - [Change Log](./introduction.md#change-log)
-  - [High Level Architecture](./high-level-architecture.md)
-    - [Technical Summary](./high-level-architecture.md#technical-summary)
-    - [Platform and Infrastructure Choice](./high-level-architecture.md#platform-and-infrastructure-choice)
-    - [Repository Structure](./high-level-architecture.md#repository-structure)
-    - [High Level Architecture Diagram](./high-level-architecture.md#high-level-architecture-diagram)
-    - [Architectural Patterns](./high-level-architecture.md#architectural-patterns)
-  - [Tech Stack](./tech-stack.md)
-    - [Technology Stack Table](./tech-stack.md#technology-stack-table)
-  - [Data Models](./data-models.md)
-    - [Node](./data-models.md#node)
-      - [Ash Resource Definition](./data-models.md#ash-resource-definition)
-      - [Relationships](./data-models.md#relationships)
-    - [Knowledge](./data-models.md#knowledge)
-      - [Ash Resource Definition](./data-models.md#ash-resource-definition)
-      - [Relationships](./data-models.md#relationships)
-    - [Contribution](./data-models.md#contribution)
-      - [Ash Resource Definition](./data-models.md#ash-resource-definition)
-      - [Relationships](./data-models.md#relationships)
-  - [API Specification](./api-specification.md)
-    - [Phoenix Channels API (Real-time P2P Communication)](./api-specification.md#phoenix-channels-api-real-time-p2p-communication)
-      - [Node Network Channel](./api-specification.md#node-network-channel)
-      - [Mother Core Channel](./api-specification.md#mother-core-channel)
-    - [gRPC API Specification (External Integrations)](./api-specification.md#grpc-api-specification-external-integrations)
-      - [Protocol Buffer Definitions](./api-specification.md#protocol-buffer-definitions)
-      - [Elixir gRPC Service Implementation](./api-specification.md#elixir-grpc-service-implementation)
-      - [Client SDK Generation](./api-specification.md#client-sdk-generation)
-  - [Components](./components.md)
-    - [Mother Core (Distributed Knowledge Engine)](./components.md#mother-core-distributed-knowledge-engine)
-    - [Node Network Manager (P2P Coordination)](./components.md#node-network-manager-p2p-coordination)
-    - [AI Provider Integration Hub (External AI Coordination)](./components.md#ai-provider-integration-hub-external-ai-coordination)
-    - [Blockchain Integration Service (XPD Token Management)](./components.md#blockchain-integration-service-xpd-token-management)
-    - [Expert Specialization Engine (Domain Intelligence)](./components.md#expert-specialization-engine-domain-intelligence)
-    - [Component Diagrams](./components.md#component-diagrams)
-  - [External APIs](./external-apis.md)
-    - [OpenAI API](./external-apis.md#openai-api)
-    - [Anthropic Claude API](./external-apis.md#anthropic-claude-api)
-    - [Google AI (Gemini) API](./external-apis.md#google-ai-gemini-api)
-    - [Solana RPC API](./external-apis.md#solana-rpc-api)
-    - [Redis Cache API](./external-apis.md#redis-cache-api)
-    - [Fly.io Platform API](./external-apis.md#flyio-platform-api)
-  - [Core Workflows](./core-workflows.md)
-    - [Knowledge Contribution and Validation Workflow](./core-workflows.md#knowledge-contribution-and-validation-workflow)
-    - [Expert Node Discovery and Query Routing Workflow](./core-workflows.md#expert-node-discovery-and-query-routing-workflow)
-    - [Network Node Discovery and P2P Connection Workflow](./core-workflows.md#network-node-discovery-and-p2p-connection-workflow)
-    - [XPD Token Distribution Workflow](./core-workflows.md#xpd-token-distribution-workflow)
-    - [AI Provider Integration and Failover Workflow](./core-workflows.md#ai-provider-integration-and-failover-workflow)
-  - [Database Schema](./database-schema.md)
-  - [Unified Project Structure](./unified-project-structure.md)
-  - [Summary](./summary.md)
-    - [Key Architectural Achievements:](./summary.md#key-architectural-achievements)
-    - [Technology Stack Validation:](./summary.md#technology-stack-validation)
-    - [Critical Success Factors:](./summary.md#critical-success-factors)
+This unified approach combines what would traditionally be separate backend and frontend architecture documents, streamlining the development process for modern fullstack applications where these concerns are increasingly intertwined.
+
+## Starter Template or Existing Project
+
+N/A - Greenfield project with custom Elixir/Phoenix umbrella application structure
+
+## Change Log
+
+| Date | Version | Description | Author |
+|------|---------|-------------|--------|
+| 2025-01-28 | v1.0 | Initial architecture document creation from PRD using Opus model | Winston (Architect) |
+
+## Sections
+
+- [High Level Architecture](./high-level-architecture.md)
+- [Tech Stack](./tech-stack.md)
+- [Data Models](./data-models.md)
+- [API Specification](./api-specification.md)
+- [Components](./components.md)
+- [External APIs](./external-apis.md)
+- [Core Workflows](./core-workflows.md)
+- [Database Schema](./database-schema.md)
+- [Frontend Architecture](./frontend-architecture.md)
+- [Backend Architecture](./backend-architecture.md)
+- [Unified Project Structure](./unified-project-structure.md)
+- [Development Workflow](./development-workflow.md)
+- [Deployment Architecture](./deployment-architecture.md)
+- [Security and Performance](./security-and-performance.md)
+- [Testing Strategy](./testing-strategy.md)
+- [Coding Standards](./coding-standards.md)
+- [Error Handling Strategy](./error-handling-strategy.md)
+- [Monitoring and Observability](./monitoring-and-observability.md)
+- [Checklist Results Report](./checklist-results-report.md)

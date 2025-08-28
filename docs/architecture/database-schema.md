@@ -1,129 +1,119 @@
 # Database Schema
 
-Based on the Ash Resources defined in the Data Models section, the PostgreSQL schema implements the core domain entities with optimized indexes and constraints for distributed AI workloads.
+## PostgreSQL Schema (via ash_postgres)
 
 ```sql
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Nodes table - Core P2P network participants
+-- Nodes table (managed by Ash Resource)
 CREATE TABLE nodes (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    public_key VARCHAR(88) NOT NULL UNIQUE, -- Ed25519 public key (base64)
-    node_type VARCHAR(20) NOT NULL CHECK (node_type IN ('genesis', 'expert', 'participant')),
-    specialization_domains TEXT[] DEFAULT '{}',
-    reputation_score DECIMAL(10,3) DEFAULT 0.000,
-    status VARCHAR(20) NOT NULL DEFAULT 'offline' CHECK (status IN ('online', 'offline', 'connecting', 'maintenance')),
-    last_seen_at TIMESTAMP WITH TIME ZONE,
-    connection_count INTEGER DEFAULT 0,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'offline',
+    specializations TEXT[] DEFAULT '{}',
+    reputation_score DECIMAL(5,2) DEFAULT 0.0,
+    wallet_address VARCHAR(100),
+    last_heartbeat TIMESTAMP WITH TIME ZONE,
     metadata JSONB DEFAULT '{}',
-    inserted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Optimized indexes for nodes
 CREATE INDEX idx_nodes_status ON nodes(status);
-CREATE INDEX idx_nodes_node_type ON nodes(node_type);
-CREATE INDEX idx_nodes_specialization_domains ON nodes USING GIN(specialization_domains);
-CREATE INDEX idx_nodes_reputation_score ON nodes(reputation_score DESC);
-CREATE INDEX idx_nodes_last_seen_at ON nodes(last_seen_at DESC);
+CREATE INDEX idx_nodes_specializations ON nodes USING GIN(specializations);
+CREATE INDEX idx_nodes_reputation ON nodes(reputation_score DESC);
 
--- Knowledge table - Collective intelligence storage
+-- Knowledge table (managed by Ash Resource)
 CREATE TABLE knowledge (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    content TEXT NOT NULL,
-    content_hash VARCHAR(64) NOT NULL UNIQUE, -- SHA-256 hash
-    confidence_score DECIMAL(5,3) DEFAULT 0.000 CHECK (confidence_score >= 0 AND confidence_score <= 1),
-    knowledge_type VARCHAR(20) NOT NULL CHECK (knowledge_type IN ('insight', 'fact', 'procedure', 'pattern')),
-    domain_tags TEXT[] DEFAULT '{}',
-    source_count INTEGER DEFAULT 0,
-    validation_status VARCHAR(20) DEFAULT 'pending' CHECK (validation_status IN ('pending', 'validated', 'disputed', 'archived')),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content JSONB NOT NULL,
+    confidence_score DECIMAL(5,4) NOT NULL DEFAULT 0.0,
+    domain VARCHAR(100) NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    merkle_root VARCHAR(66) NOT NULL,
+    created_by_id UUID REFERENCES nodes(id),
+    parent_knowledge_id UUID REFERENCES knowledge(id),
+    validation_count INTEGER DEFAULT 0,
     metadata JSONB DEFAULT '{}',
-    inserted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Optimized indexes for knowledge
-CREATE INDEX idx_knowledge_content_hash ON knowledge(content_hash);
-CREATE INDEX idx_knowledge_confidence_score ON knowledge(confidence_score DESC);
-CREATE INDEX idx_knowledge_validation_status ON knowledge(validation_status);
-CREATE INDEX idx_knowledge_knowledge_type ON knowledge(knowledge_type);
-CREATE INDEX idx_knowledge_domain_tags ON knowledge USING GIN(domain_tags);
-CREATE INDEX idx_knowledge_inserted_at ON knowledge(inserted_at DESC);
+CREATE INDEX idx_knowledge_domain ON knowledge(domain);
+CREATE INDEX idx_knowledge_confidence ON knowledge(confidence_score DESC);
+CREATE INDEX idx_knowledge_created_by ON knowledge(created_by_id);
+CREATE INDEX idx_knowledge_content ON knowledge USING GIN(content);
 
--- Full-text search for knowledge content
-CREATE INDEX idx_knowledge_content_fts ON knowledge USING GIN(to_tsvector('english', content));
-
--- Contributions table - Join table with quality tracking
+-- Contributions table (managed by Ash Resource)
 CREATE TABLE contributions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    node_id UUID NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
-    knowledge_id UUID NOT NULL REFERENCES knowledge(id) ON DELETE CASCADE,
-    contribution_type VARCHAR(20) NOT NULL CHECK (contribution_type IN ('creation', 'validation', 'synthesis', 'correction')),
-    quality_score DECIMAL(5,3) DEFAULT 0.000 CHECK (quality_score >= 0 AND quality_score <= 1),
-    tokens_earned INTEGER DEFAULT 0,
-    peer_validations INTEGER DEFAULT 0,
-    contribution_weight DECIMAL(5,3) DEFAULT 1.000,
-    metadata JSONB DEFAULT '{}',
-    inserted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    node_id UUID NOT NULL REFERENCES nodes(id),
+    knowledge_id UUID NOT NULL REFERENCES knowledge(id),
+    quality_score DECIMAL(5,4) NOT NULL DEFAULT 0.0,
+    xpd_reward DECIMAL(20,8) DEFAULT 0.0,
+    validation_count INTEGER DEFAULT 0,
+    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    transaction_hash VARCHAR(100),
+    inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Optimized indexes for contributions
-CREATE INDEX idx_contributions_node_id ON contributions(node_id);
-CREATE INDEX idx_contributions_knowledge_id ON contributions(knowledge_id);
-CREATE INDEX idx_contributions_contribution_type ON contributions(contribution_type);
-CREATE INDEX idx_contributions_quality_score ON contributions(quality_score DESC);
-CREATE INDEX idx_contributions_tokens_earned ON contributions(tokens_earned DESC);
-CREATE INDEX idx_contributions_inserted_at ON contributions(inserted_at DESC);
+CREATE INDEX idx_contributions_node ON contributions(node_id);
+CREATE INDEX idx_contributions_knowledge ON contributions(knowledge_id);
+CREATE INDEX idx_contributions_status ON contributions(status);
 
--- Composite indexes for common queries
-CREATE INDEX idx_contributions_node_type_quality ON contributions(node_id, contribution_type, quality_score DESC);
-CREATE INDEX idx_knowledge_status_confidence ON knowledge(validation_status, confidence_score DESC);
+-- Mother Core consensus table
+CREATE TABLE mother_core_states (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    genesis_node BOOLEAN DEFAULT FALSE,
+    consensus_state JSONB NOT NULL,
+    network_version VARCHAR(20) NOT NULL,
+    total_knowledge INTEGER DEFAULT 0,
+    connected_nodes INTEGER DEFAULT 0,
+    last_sync TIMESTAMP WITH TIME ZONE,
+    merkle_tree JSONB,
+    inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
 
--- Database functions for performance
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
+-- Validations table for knowledge validation tracking
+CREATE TABLE validations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    knowledge_id UUID NOT NULL REFERENCES knowledge(id),
+    validator_node_id UUID NOT NULL REFERENCES nodes(id),
+    is_valid BOOLEAN NOT NULL,
+    confidence_adjustment DECIMAL(3,2),
+    feedback TEXT,
+    signature VARCHAR(200),
+    inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
 
--- Triggers for automatic timestamp updates
-CREATE TRIGGER update_nodes_updated_at BEFORE UPDATE ON nodes
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE INDEX idx_validations_knowledge ON validations(knowledge_id);
+CREATE INDEX idx_validations_validator ON validations(validator_node_id);
 
-CREATE TRIGGER update_knowledge_updated_at BEFORE UPDATE ON knowledge
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Network events for audit and debugging
+CREATE TABLE network_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_type VARCHAR(100) NOT NULL,
+    node_id UUID REFERENCES nodes(id),
+    payload JSONB,
+    inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
 
-CREATE TRIGGER update_contributions_updated_at BEFORE UPDATE ON contributions
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE INDEX idx_network_events_type ON network_events(event_type);
+CREATE INDEX idx_network_events_node ON network_events(node_id);
+CREATE INDEX idx_network_events_time ON network_events(inserted_at DESC);
 
--- Materialized view for node reputation aggregation
-CREATE MATERIALIZED VIEW node_reputation_summary AS
-SELECT 
-    n.id,
-    n.public_key,
-    n.node_type,
-    n.specialization_domains,
-    n.status,
-    COUNT(c.id) as total_contributions,
-    AVG(c.quality_score) as avg_quality_score,
-    SUM(c.tokens_earned) as total_tokens_earned,
-    COUNT(DISTINCT c.knowledge_id) as unique_knowledge_contributed
-FROM nodes n
-LEFT JOIN contributions c ON n.id = c.node_id
-GROUP BY n.id, n.public_key, n.node_type, n.specialization_domains, n.status;
+-- Users table for authentication (via ash_authentication)
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    hashed_password VARCHAR(255),
+    role VARCHAR(50) DEFAULT 'user',
+    node_id UUID REFERENCES nodes(id),
+    confirmed_at TIMESTAMP WITH TIME ZONE,
+    inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
 
-CREATE UNIQUE INDEX idx_node_reputation_summary_id ON node_reputation_summary(id);
-CREATE INDEX idx_node_reputation_summary_avg_quality ON node_reputation_summary(avg_quality_score DESC);
-
--- Refresh materialized view function
-CREATE OR REPLACE FUNCTION refresh_node_reputation_summary()
-RETURNS void AS $$
-BEGIN
-    REFRESH MATERIALIZED VIEW CONCURRENTLY node_reputation_summary;
-END;
-$$ LANGUAGE plpgsql;
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_node ON users(node_id);
 ```

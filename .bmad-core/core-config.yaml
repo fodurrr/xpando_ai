@@ -18,7 +18,7 @@ devLoadAlwaysFiles:
   - docs/elixir_rules/mandatory-guidelines.md
   - docs/architecture/coding-standards.md
   - docs/architecture/tech-stack.md
-  - docs/architecture/source-tree.md
+  - docs/architecture/unified-project-structure.md
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad

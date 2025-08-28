@@ -1,322 +1,126 @@
 # Components
 
-Based on the architectural patterns, tech stack, and data models defined above, xPando's component architecture follows a **distributed actor model** with clear boundaries and interfaces. Each component leverages Elixir/OTP's supervision trees for fault tolerance while maintaining loose coupling through well-defined APIs.
+## xpando_web (Phoenix Web Application)
 
-## Mother Core (Distributed Knowledge Engine)
-
-**Responsibility:** Centralized knowledge aggregation, consensus validation, and intelligent distribution across the P2P network. Acts as the "brain" of the collective intelligence system.
+**Responsibility:** Web interface, real-time dashboards, and API endpoints for node management and monitoring
 
 **Key Interfaces:**
-- `XPando.MotherCore.ingest_knowledge/2` - Accept knowledge contributions from nodes
-- `XPando.MotherCore.validate_consensus/1` - Trigger Byzantine fault-tolerant validation
-- `XPando.MotherCore.distribute_knowledge/1` - Propagate validated knowledge to network
-- `XPando.MotherCore.query_knowledge/2` - Intelligent knowledge retrieval with confidence scoring
+- Phoenix LiveView routes for UI
+- GraphQL API via Absinthe
+- Phoenix Channels for WebSocket connections
+- Admin dashboard via ash_admin
 
-**Dependencies:** PostgreSQL via ash_postgres, ash_ai for AI integrations, Redis caching, Phoenix PubSub for distribution
+**Dependencies:** xpando_core, xpando_blockchain, Phoenix, Absinthe
 
-**Technology Stack:** GenServer supervision tree, Ash Resources for persistence, ash_ai for MCP servers, Broadway pipelines for async processing
+**Technology Stack:** Phoenix 1.7, LiveView, DaisyUI, Tailwind CSS
 
-```elixir
-defmodule XPando.MotherCore do
-  use GenServer
-  
-  # Public API
-  def ingest_knowledge(contribution, metadata) do
-    GenServer.call(__MODULE__, {:ingest, contribution, metadata})
-  end
-  
-  def validate_consensus(knowledge_id) do
-    GenServer.cast(__MODULE__, {:validate, knowledge_id})
-  end
-  
-  # GenServer callbacks with consensus logic
-  def handle_call({:ingest, contribution, metadata}, _from, state) do
-    case process_contribution(contribution, metadata) do
-      {:ok, knowledge} -> 
-        schedule_validation(knowledge.id)
-        {:reply, {:ok, knowledge}, state}
-      {:error, reason} -> 
-        {:reply, {:error, reason}, state}
-    end
-  end
-  
-  defp process_contribution(contribution, metadata) do
-    XPando.Core.Knowledge
-    |> Ash.Changeset.for_create(:create_from_contribution, %{
-      content: contribution.content,
-      source_node: contribution.node_id,
-      metadata: metadata
-    })
-    |> Ash.create()
-  end
-end
-```
+## xpando_core (Core Domain Logic)
 
-## Node Network Manager (P2P Coordination)
-
-**Responsibility:** Manages P2P node discovery, connection health, network topology, and real-time communication between distributed AI nodes.
+**Responsibility:** Implements all business logic, domain models, and knowledge management using Ash Framework
 
 **Key Interfaces:**
-- `XPando.NodeNetwork.discover_nodes/1` - libcluster-based node discovery
-- `XPando.NodeNetwork.broadcast_status/2` - Node status updates across network
-- `XPando.NodeNetwork.route_to_expert/2` - Intelligent routing to specialized nodes
-- `XPando.NodeNetwork.monitor_connections/0` - Connection health and failover
+- Ash Resources for all domain entities
+- Ash Actions for business operations
+- Ash Policies for authorization
+- Ash Calculations for derived data
 
-**Dependencies:** libcluster, Phoenix Channels, BEAM distribution, Redis for topology caching
+**Dependencies:** ash, ash_postgres, ash_authentication
 
-**Technology Stack:** GenServer cluster management, Phoenix PubSub, OTP distribution protocols
+**Technology Stack:** Ash 3.x, PostgreSQL adapters, ETS caching
 
-```elixir
-defmodule XPando.NodeNetwork.Manager do
-  use GenServer
-  
-  def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
-  end
-  
-  def discover_nodes(specialization \\ nil) do
-    GenServer.call(__MODULE__, {:discover, specialization})
-  end
-  
-  def broadcast_status(node_id, status) do
-    GenServer.cast(__MODULE__, {:broadcast_status, node_id, status})
-  end
-  
-  def handle_call({:discover, specialization}, _from, state) do
-    nodes = Node.get_connected_nodes()
-    |> filter_by_specialization(specialization)
-    |> Enum.map(&load_node_metadata/1)
-    
-    {:reply, {:ok, nodes}, state}
-  end
-  
-  def handle_cast({:broadcast_status, node_id, status}, state) do
-    Phoenix.PubSub.broadcast(
-      XPando.PubSub,
-      "node_network:status",
-      {:node_status_update, node_id, status, DateTime.utc_now()}
-    )
-    {:noreply, state}
-  end
-end
-```
+## xpando_node (P2P Node Runtime)
 
-## AI Provider Integration Hub (External AI Coordination)
-
-**Responsibility:** Manages connections to external AI providers (OpenAI, Anthropic, Google), implements circuit breaker patterns, and provides unified interface for AI capabilities.
+**Responsibility:** Manages individual AI node lifecycle, P2P communication, and knowledge sharing protocols
 
 **Key Interfaces:**
-- `XPando.AI.query/3` - Unified AI query with provider selection
-- `XPando.AI.stream_response/2` - Streaming responses for real-time interaction
-- `XPando.AI.health_check/1` - Provider availability and performance monitoring
-- `XPando.AI.estimate_cost/2` - Token usage and cost prediction
+- GenServer-based node processes
+- libcluster integration for discovery
+- Phoenix PubSub for messaging
+- Knowledge sync protocols
 
-**Dependencies:** Broadway pipelines, HTTP clients (Req/Finch), Redis for response caching
+**Dependencies:** xpando_core, libcluster, Phoenix.PubSub
 
-**Technology Stack:** Broadway producers/consumers, GenServer for circuit breakers, ETS for hot caching
+**Technology Stack:** OTP GenServers, libcluster, distributed Erlang
 
-```elixir
-defmodule XPando.AI.ProviderHub do
-  use Broadway
-  
-  alias XPando.AI.Providers.{OpenAI, Anthropic, Google}
-  
-  def start_link(opts) do
-    Broadway.start_link(__MODULE__,
-      name: __MODULE__,
-      producer: [
-        module: {XPando.AI.Producer, []},
-        concurrency: 10
-      ],
-      processors: [
-        default: [
-          concurrency: 50,
-          max_demand: 20
-        ]
-      ]
-    )
-  end
-  
-  def query(prompt, options \\ []) do
-    provider = select_optimal_provider(prompt, options)
-    
-    %{
-      provider: provider,
-      prompt: prompt,
-      options: options,
-      request_id: Ecto.UUID.generate()
-    }
-    |> Broadway.test_message()
-    |> handle_message("default", %{})
-  end
-  
-  def handle_message(_processor, message, _context) do
-    %{data: %{provider: provider, prompt: prompt}} = message
-    
-    case apply(provider, :query, [prompt, message.data.options]) do
-      {:ok, response} -> 
-        cache_response(message.data.request_id, response)
-        Message.ack(message)
-      {:error, reason} ->
-        Message.fail(message, reason)
-    end
-  end
-end
-```
+## xpando_ai (AI Provider Integration)
 
-## Blockchain Integration Service (XPD Token Management)
-
-**Responsibility:** Handles Solana blockchain interactions, XPD token operations, wallet connectivity, and token distribution based on contribution quality.
+**Responsibility:** Integrates multiple AI providers through Broadway pipelines with adapter pattern
 
 **Key Interfaces:**
-- `XPando.Blockchain.create_token/1` - SPL token creation and management
-- `XPando.Blockchain.distribute_rewards/2` - Token distribution to contributors
-- `XPando.Blockchain.verify_wallet/1` - Wallet authentication and validation
-- `XPando.Blockchain.track_transactions/1` - Transaction monitoring and confirmation
+- Broadway pipeline definitions
+- Provider adapter behaviours
+- Request/response transformations
+- Rate limiting and circuit breakers
 
-**Dependencies:** Solana RPC endpoints, wallet adapters, Oban for async blockchain operations
+**Dependencies:** Broadway, Tesla HTTP client, provider SDKs
 
-**Technology Stack:** GenServer for wallet management, Oban jobs for blockchain ops, HTTP clients for Solana RPC
+**Technology Stack:** Broadway, Tesla, Finch HTTP client
 
-```elixir
-defmodule XPando.Blockchain.TokenManager do
-  use GenServer
-  
-  def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
-  end
-  
-  def distribute_rewards(contributions, total_pool) do
-    GenServer.cast(__MODULE__, {:distribute_rewards, contributions, total_pool})
-  end
-  
-  def verify_wallet(wallet_address) do
-    GenServer.call(__MODULE__, {:verify_wallet, wallet_address})
-  end
-  
-  def handle_cast({:distribute_rewards, contributions, total_pool}, state) do
-    # Calculate token distribution based on contribution quality
-    distributions = calculate_token_distribution(contributions, total_pool)
-    
-    # Queue blockchain transactions via Oban
-    Enum.each(distributions, fn {wallet, amount} ->
-      %{wallet_address: wallet, token_amount: amount, transaction_type: "reward"}
-      |> XPando.Blockchain.TransactionWorker.new()
-      |> Oban.insert()
-    end)
-    
-    {:noreply, state}
-  end
-  
-  def handle_call({:verify_wallet, wallet_address}, _from, state) do
-    case Solana.RPC.get_account_info(wallet_address) do
-      {:ok, account_info} -> {:reply, {:ok, account_info}, state}
-      {:error, reason} -> {:reply, {:error, reason}, state}
-    end
-  end
-end
-```
+## xpando_blockchain (Solana Integration)
 
-## Expert Specialization Engine (Domain Intelligence)
-
-**Responsibility:** Manages node specialization development, tracks expertise domains, routes queries to appropriate specialists, and maintains specialization scoring.
+**Responsibility:** Manages XPD token operations, wallet integration, and reward distribution
 
 **Key Interfaces:**
-- `XPando.Specialization.develop_expertise/2` - Node specialization training
-- `XPando.Specialization.route_query/1` - Expert node selection for queries
-- `XPando.Specialization.evaluate_performance/2` - Specialization performance tracking
-- `XPando.Specialization.suggest_domains/1` - Recommend specialization areas
+- Solana RPC client
+- SPL Token operations
+- Wallet authentication
+- Transaction monitoring
 
-**Dependencies:** Ash Resources for specialization data, machine learning algorithms, Phoenix PubSub
+**Dependencies:** Solana Web3 libraries, ex_web3
 
-**Technology Stack:** GenServer for specialization tracking, Nx/Axon for ML algorithms, ETS for performance caching
+**Technology Stack:** Solana SPL Token, JSON-RPC client
 
-```elixir
-defmodule XPando.Specialization.Engine do
-  use GenServer
-  
-  def develop_expertise(node_id, domain, training_data) do
-    GenServer.call(__MODULE__, {:develop_expertise, node_id, domain, training_data})
-  end
-  
-  def route_query(query) do
-    GenServer.call(__MODULE__, {:route_query, query})
-  end
-  
-  def handle_call({:route_query, query}, _from, state) do
-    domain = classify_query_domain(query)
-    expert_nodes = find_domain_experts(domain)
-    
-    selected_node = expert_nodes
-    |> Enum.sort_by(&get_expertise_score(&1, domain), :desc)
-    |> Enum.filter(&node_available?/1)
-    |> List.first()
-    
-    {:reply, {:ok, selected_node}, state}
-  end
-  
-  defp classify_query_domain(query) do
-    # ML-based domain classification
-    query
-    |> XPando.ML.DomainClassifier.classify()
-    |> extract_primary_domain()
-  end
-end
-```
+## Mother Core (Distributed Consensus Engine)
 
-## Component Diagrams
+**Responsibility:** Aggregates knowledge from all nodes, maintains consensus, and distributes validated intelligence
+
+**Key Interfaces:**
+- Consensus protocol implementation
+- Knowledge merge strategies
+- Byzantine fault tolerance
+- Distributed state management
+
+**Dependencies:** xpando_core, xpando_node, Raft/PBFT libraries
+
+**Technology Stack:** Distributed Erlang, Mnesia, consensus algorithms
+
+## Component Interaction Diagram
 
 ```mermaid
-graph TB
-    subgraph "xPando Core Components"
-        MC[Mother Core<br/>Knowledge Engine]
-        NN[Node Network<br/>P2P Manager]
-        AI[AI Provider Hub<br/>External Integration]
-        BC[Blockchain Service<br/>Token Management]
-        SE[Specialization Engine<br/>Domain Intelligence]
+graph LR
+    subgraph "Web Layer"
+        WEB[xpando_web]
+        ADMIN[Admin UI]
     end
     
-    subgraph "External Dependencies"
-        PG[(PostgreSQL)]
-        REDIS[(Redis Cache)]
-        SOLANA[Solana Blockchain]
-        OPENAI[OpenAI API]
-        ANTHROPIC[Anthropic API]
-        GOOGLE[Google AI API]
+    subgraph "Core Layer"
+        CORE[xpando_core]
+        MC[Mother Core]
     end
     
-    subgraph "Infrastructure Layer"
-        PS[Phoenix PubSub]
-        OTP[OTP Supervision]
-        BROADWAY[Broadway Pipelines]
-        OBAN[Oban Jobs]
+    subgraph "Integration Layer"
+        NODE[xpando_node]
+        AI[xpando_ai]
+        BC[xpando_blockchain]
     end
     
-    MC --> PG
-    MC --> REDIS
-    MC --> PS
+    subgraph "External Systems"
+        NODES[P2P Nodes]
+        PROVIDERS[AI Providers]
+        SOLANA[Solana]
+    end
     
-    NN --> PS
-    NN --> REDIS
-    NN --> OTP
-    
-    AI --> BROADWAY
-    AI --> OPENAI
-    AI --> ANTHROPIC
-    AI --> GOOGLE
-    AI --> REDIS
-    
+    WEB --> CORE
+    ADMIN --> CORE
+    CORE --> MC
+    MC --> NODE
+    NODE --> NODES
+    CORE --> AI
+    AI --> PROVIDERS
+    WEB --> BC
     BC --> SOLANA
-    BC --> OBAN
-    BC --> PG
     
-    SE --> PG
-    SE --> PS
-    SE --> REDIS
-    
-    MC -.->|Knowledge Distribution| NN
-    NN -.->|Expert Routing| SE
-    SE -.->|Specialization Data| MC
-    AI -.->|AI Responses| MC
-    MC -.->|Quality Scoring| BC
+    NODE -.-> CORE
+    AI -.-> CORE
+    BC -.-> CORE
 ```
