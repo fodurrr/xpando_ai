@@ -223,54 +223,46 @@ defmodule XpandoWebWeb.NodeChannel do
   # Helper functions for safe operations
 
   defp safe_subscribe(topic) do
-    try do
-      Phoenix.PubSub.subscribe(XpandoWeb.PubSub, topic)
-    rescue
-      error ->
-        Logger.debug("Failed to subscribe to #{topic}: #{inspect(error)}")
-        :error
-    end
+    Phoenix.PubSub.subscribe(XpandoWeb.PubSub, topic)
+  rescue
+    error ->
+      Logger.debug("Failed to subscribe to #{topic}: #{inspect(error)}")
+      :error
   end
 
   defp get_network_state_safe do
-    try do
-      nodes = Manager.get_nodes()
-      topology = Manager.get_topology()
-      {nodes, topology}
-    rescue
-      error ->
-        Logger.debug("Failed to get network state from Manager: #{inspect(error)}")
-        # Return empty/default state for tests
-        {%{}, %{}}
-    catch
-      :exit, reason ->
-        Logger.debug("Failed to get network state from Manager: #{inspect(reason)}")
-        # Return empty/default state for tests
-        {%{}, %{}}
-    end
+    nodes = Manager.get_nodes()
+    topology = Manager.get_topology()
+    {nodes, topology}
+  rescue
+    error ->
+      Logger.debug("Failed to get network state from Manager: #{inspect(error)}")
+      # Return empty/default state for tests
+      {%{}, %{}}
+  catch
+    :exit, reason ->
+      Logger.debug("Failed to get network state from Manager: #{inspect(reason)}")
+      # Return empty/default state for tests
+      {%{}, %{}}
   end
 
   defp safe_update_node_status(node_id, status) do
-    try do
-      Manager.update_node_status(node_id, status)
-    rescue
-      error ->
-        Logger.debug("Failed to update node status for #{node_id}: #{inspect(error)}")
-        :error
-    catch
-      :exit, reason ->
-        Logger.debug("Failed to update node status for #{node_id}: #{inspect(reason)}")
-        :error
-    end
+    Manager.update_node_status(node_id, status)
+  rescue
+    error ->
+      Logger.debug("Failed to update node status for #{node_id}: #{inspect(error)}")
+      :error
+  catch
+    :exit, reason ->
+      Logger.debug("Failed to update node status for #{node_id}: #{inspect(reason)}")
+      :error
   end
 
   defp safe_broadcast(topic, message) do
-    try do
-      Phoenix.PubSub.broadcast(XpandoWeb.PubSub, topic, message)
-    rescue
-      error ->
-        Logger.debug("Failed to broadcast to #{topic}: #{inspect(error)}")
-        :error
-    end
+    Phoenix.PubSub.broadcast(XpandoWeb.PubSub, topic, message)
+  rescue
+    error ->
+      Logger.debug("Failed to broadcast to #{topic}: #{inspect(error)}")
+      :error
   end
 end

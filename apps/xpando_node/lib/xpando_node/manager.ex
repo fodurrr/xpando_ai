@@ -520,13 +520,11 @@ defmodule XPando.Node.Manager do
 
   # Helper function to safely broadcast to PubSub (handles cases where PubSub might not be available)
   defp safe_broadcast(topic, message) do
-    try do
-      Phoenix.PubSub.broadcast(XpandoWeb.PubSub, topic, message)
-    rescue
-      error ->
-        Logger.debug("Failed to broadcast to #{topic}: #{inspect(error)}")
-        :error
-    end
+    Phoenix.PubSub.broadcast(XpandoWeb.PubSub, topic, message)
+  rescue
+    error ->
+      Logger.debug("Failed to broadcast to #{topic}: #{inspect(error)}")
+      :error
   end
 
   defp perform_heartbeat_check(state) do

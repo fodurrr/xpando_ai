@@ -10,11 +10,9 @@ defmodule XPando.Node.ClusterIntegrationTest do
   @moduletag timeout: 10_000
 
   defp safe_stop_manager(pid) when is_pid(pid) do
-    try do
-      GenServer.stop(pid, :normal, 1000)
-    catch
-      :exit, _ -> Process.exit(pid, :kill)
-    end
+    GenServer.stop(pid, :normal, 1000)
+  catch
+    :exit, _ -> Process.exit(pid, :kill)
   end
 
   defp safe_stop_manager(_), do: :ok
