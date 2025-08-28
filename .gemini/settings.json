@@ -1,0 +1,15 @@
+{
+  "theme": "Default",
+  "mcpServers": {
+    "tidewave": {
+      "httpUrl": "http://localhost:4000/tidewave/mcp",
+      "description": "MCP server for Elixir Tidewave."
+    },
+    "ash_ai": {
+      "httpUrl": [
+        "http://localhost:4000/ash_ai/mcp"
+      ],
+      "description": "MCP server for Ash AI."
+    }
+  }
+}
