@@ -202,6 +202,7 @@ defmodule XPando.TestGenerators do
   end
 
   # Helper to generate valid Ed25519 key-signature pairs for proper registration tests
+  # Optimized for cryptographic security and test performance
   def generate_valid_node_identity(endpoint) do
     {public_key, private_key} = :crypto.generate_key(:eddsa, :ed25519)
     signature = :crypto.sign(:eddsa, :none, endpoint, [private_key, :ed25519])
