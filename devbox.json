@@ -4,8 +4,7 @@
     "nodejs@latest",
     "pnpm@latest",
     "erlang@27.2",
-    "elixir@1.18.1",
-    "claude-code@latest"
+    "elixir@1.18.1"
   ],
   "shell": {
     "init_hook": [
