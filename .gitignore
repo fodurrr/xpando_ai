@@ -81,14 +81,14 @@ temp/
 *.db
 
 # AI/ML artifacts
-.bmad-core/
-.claude/
-.gemini/
-.qwen/
+#.bmad-core/
+#.claude/
+#.gemini/
+#.qwen/
 
 # DevBox and containers
-.devcontainer/
-.devbox/
+#.devcontainer/
+#.devbox/
 
 # Testing
 /cover/
