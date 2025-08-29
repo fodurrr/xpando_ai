@@ -101,6 +101,7 @@ mix test --seed 0
 ## Non-Negotiable Git & GitHub Rules
 
 - **NEVER** commit, push, or create PRs/issues without explicit permission
+- **ALWAYS** when you asked to commit **AWLWAYS** commit all files in the project use `git add -A`.
 - **ALWAYS** use `gh` CLI for ALL GitHub interactions
 - **NO** autonomous git operations - wait for explicit instructions
 - This is an **Elixir umbrella project** - all decisions must respect this architecture
