@@ -30,6 +30,7 @@ defmodule XPando.MixProject do
       {:ash_authentication, "~> 4.9"},
       {:ash_postgres, "~> 2.6"},
       {:ash, "~> 3.5"},
+      {:igniter, "~> 0.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
