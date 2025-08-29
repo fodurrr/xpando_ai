@@ -1,41 +1,122 @@
 /**
- * Dashboard LiveView Hooks
+ * LiveView Hooks
  * 
- * Provides client-side enhancements for the xPando dashboard including:
+ * Provides client-side enhancements for xPando including:
+ * - Universal theme management
  * - Real-time status indicators
  * - Network activity animations
- * - Theme persistence
  * - Connection health monitoring
  */
 
-// Theme persistence hook
-const ThemeHook = {
+// Universal theme hook - handles all theme management consistently
+const UniversalTheme = {
   mounted() {
-    // Load saved theme on mount and sync with LiveView
-    const savedTheme = localStorage.getItem('xpando-theme-preference') || 'dark'
-    document.documentElement.setAttribute('data-theme', savedTheme)
+    this.storageKey = this.el.dataset.storageKey || 'xpando-theme-preference'
+    this.defaultTheme = this.el.dataset.defaultTheme || 'dark'
     
-    // Push the saved theme to LiveView to sync state
-    this.pushEvent("sync_theme", { theme: savedTheme })
+    // Initialize theme on mount
+    this.initializeTheme()
     
-    // Listen for theme changes
-    this.handleEvent("theme_changed", ({ theme }) => {
-      document.documentElement.setAttribute('data-theme', theme)
-      localStorage.setItem('xpando-theme-preference', theme)
-      
-      // Close the theme dropdown after selection
-      const dropdownButton = document.querySelector('.dropdown [tabindex="0"]')
-      if (dropdownButton) {
-        dropdownButton.blur()
-        // Remove focus from any dropdown elements
-        document.activeElement?.blur()
+    // Listen for theme change events
+    this.el.addEventListener('xpando:theme-change', (e) => {
+      this.changeTheme(e.detail.theme)
+    })
+    
+    // Listen for storage changes (cross-tab sync)
+    window.addEventListener('storage', (e) => {
+      if (e.key === this.storageKey && e.newValue) {
+        this.applyTheme(e.newValue)
       }
-      
-      // Smooth transition effect
-      document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease'
+    })
+    
+    // Update UI on mount
+    this.updateThemeUI()
+  },
+  
+  initializeTheme() {
+    // Get saved theme or use default
+    const savedTheme = localStorage.getItem(this.storageKey) || this.defaultTheme
+    
+    // Apply theme immediately
+    this.applyTheme(savedTheme)
+    
+    // Sync with LiveView if connected
+    if (this.pushEvent) {
+      this.pushEvent("sync_theme", { theme: savedTheme })
+    }
+  },
+  
+  changeTheme(theme) {
+    // Save to localStorage
+    localStorage.setItem(this.storageKey, theme)
+    
+    // Apply theme
+    this.applyTheme(theme)
+    
+    // Notify LiveView if connected
+    if (this.pushEvent) {
+      this.pushEvent("theme_changed", { theme })
+    }
+    
+    // Dispatch custom event for other components
+    window.dispatchEvent(new CustomEvent('theme-applied', { 
+      detail: { theme } 
+    }))
+  },
+  
+  applyTheme(theme) {
+    // Apply to document root
+    document.documentElement.setAttribute('data-theme', theme)
+    
+    // Add smooth transition
+    if (!document.documentElement.classList.contains('theme-transition')) {
+      document.documentElement.classList.add('theme-transition')
       setTimeout(() => {
-        document.body.style.transition = ''
+        document.documentElement.classList.remove('theme-transition')
       }, 300)
+    }
+    
+    // Update UI elements
+    this.updateThemeUI()
+  },
+  
+  updateThemeUI() {
+    const currentTheme = localStorage.getItem(this.storageKey) || 
+                        document.documentElement.getAttribute('data-theme') || 
+                        this.defaultTheme
+    
+    // Update theme icons visibility
+    const darkIcon = this.el.querySelector('.theme-icon-dark')
+    const lightIcon = this.el.querySelector('.theme-icon-light')
+    
+    if (darkIcon && lightIcon) {
+      if (currentTheme === 'light' || currentTheme === 'cupcake' || currentTheme === 'bumblebee') {
+        darkIcon.classList.add('hidden')
+        lightIcon.classList.remove('hidden')
+      } else {
+        darkIcon.classList.remove('hidden')
+        lightIcon.classList.add('hidden')
+      }
+    }
+    
+    // Update checkmarks for all theme options
+    this.el.querySelectorAll('.theme-check').forEach(check => {
+      check.classList.add('hidden')
+    })
+    
+    const activeCheck = this.el.querySelector(`.theme-check-${currentTheme}`)
+    if (activeCheck) {
+      activeCheck.classList.remove('hidden')
+    }
+    
+    // Update active state on buttons
+    this.el.querySelectorAll('.theme-option').forEach(option => {
+      const themeValue = option.dataset.themeValue
+      if (themeValue === currentTheme) {
+        option.classList.add('active')
+      } else {
+        option.classList.remove('active')
+      }
     })
   }
 }
@@ -59,7 +140,7 @@ const NetworkStatusHook = {
     })
   },
   
-  showNetworkActivity(type, nodeId) {
+  showNetworkActivity(type, _nodeId) {
     // Create temporary activity indicator
     const indicator = document.createElement('div')
     indicator.className = 'fixed top-4 right-4 alert alert-info alert-sm z-[60] animate-slide-in-right'
@@ -238,4 +319,4 @@ const ToastHook = {
   }
 }
 
-export { ThemeHook, NetworkStatusHook, NetworkGraphHook, MetricsHook, ToastHook }
+export { UniversalTheme, NetworkStatusHook, NetworkGraphHook, MetricsHook, ToastHook }

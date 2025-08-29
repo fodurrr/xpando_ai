@@ -21,15 +21,15 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
-// Import dashboard hooks
-import { ThemeHook, NetworkStatusHook, NetworkGraphHook, MetricsHook, ToastHook } from "./dashboard_hooks"
+// Import hooks
+import { UniversalTheme, NetworkStatusHook, NetworkGraphHook, MetricsHook, ToastHook } from "./hooks"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
   hooks: {
-    Theme: ThemeHook,
+    UniversalTheme: UniversalTheme,
     NetworkStatus: NetworkStatusHook,
     NetworkGraph: NetworkGraphHook,
     Metrics: MetricsHook,
@@ -51,71 +51,53 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
-// Theme management: Support manual theme selection with localStorage persistence
+// Universal theme initialization for both static and LiveView pages
 function initializeTheme() {
-  const html = document.documentElement
   const STORAGE_KEY = 'xpando-theme-preference'
+  const DEFAULT_THEME = 'dark'
   
-  function applyTheme(theme) {
-    html.setAttribute('data-theme', theme)
-    // Add smooth transition effect
-    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease'
-    setTimeout(() => {
-      document.body.style.transition = ''
-    }, 300)
-  }
+  // Get stored theme or default
+  const storedTheme = localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME
   
-  // Get stored theme or default to dark theme
-  const storedTheme = localStorage.getItem(STORAGE_KEY) || 'dark'
+  // Apply theme immediately to prevent flash
+  document.documentElement.setAttribute('data-theme', storedTheme)
   
-  // Apply initial theme
-  applyTheme(storedTheme)
-  
-  // Handle theme switching clicks for static pages (non-LiveView)
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('[phx-click="switch_theme"]')) {
-      const themeValue = e.target.getAttribute('phx-value-theme')
-      if (themeValue) {
-        localStorage.setItem(STORAGE_KEY, themeValue)
-        applyTheme(themeValue)
-        
-        // Update dropdown state
-        updateDropdownSelection(themeValue)
-        
-        // Close the dropdown after selection
-        const dropdownButton = e.target.closest('.dropdown').querySelector('[tabindex="0"]')
-        if (dropdownButton) {
-          dropdownButton.blur()
-          // Remove focus from any dropdown elements
-          document.activeElement?.blur()
-        }
+  // Add CSS for smooth theme transitions
+  if (!document.getElementById('theme-transition-styles')) {
+    const style = document.createElement('style')
+    style.id = 'theme-transition-styles'
+    style.textContent = `
+      .theme-transition,
+      .theme-transition *,
+      .theme-transition *::before,
+      .theme-transition *::after {
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
       }
-    }
-  })
-  
-  function updateDropdownSelection(selectedTheme) {
-    // Update active state in dropdowns
-    const buttons = document.querySelectorAll('[data-theme-toggle]')
-    buttons.forEach(button => {
-      const theme = button.getAttribute('phx-value-theme')
-      if (theme === selectedTheme) {
-        button.classList.add('active')
-      } else {
-        button.classList.remove('active')
-      }
-    })
+    `
+    document.head.appendChild(style)
   }
-  
-  // Initialize dropdown state
-  updateDropdownSelection(storedTheme)
 }
 
-// Initialize theme when DOM is loaded
+// Initialize theme as early as possible
+initializeTheme()
+
+// Re-initialize on DOM content loaded to ensure it's applied
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeTheme)
-} else {
-  initializeTheme()
 }
+
+// Listen for the custom theme change event (for static pages)
+window.addEventListener('xpando:theme-change', function(e) {
+  const theme = e.detail.theme
+  document.documentElement.setAttribute('data-theme', theme)
+  localStorage.setItem('xpando-theme-preference', theme)
+  
+  // Add transition class temporarily
+  document.documentElement.classList.add('theme-transition')
+  setTimeout(() => {
+    document.documentElement.classList.remove('theme-transition')
+  }, 300)
+})
 
 // Smooth scrolling for anchor links with animation
 function initializeSmoothScrolling() {
@@ -263,4 +245,3 @@ if (document.readyState === 'loading') {
 } else {
   initializeBackToTop()
 }
-

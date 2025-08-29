@@ -35,16 +35,18 @@ defmodule XpandoWebWeb.DashboardLiveTest do
       assert has_element?(view, "#toast-container")
     end
 
-    test "handles theme switching", %{conn: conn} do
+    test "renders theme switcher component", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/dashboard")
 
-      # Test theme switching - use the actual theme values from ThemeSwitcher
-      view
-      |> element("button[phx-value-theme='light']")
-      |> render_click()
+      # Test that theme switcher component is present
+      assert has_element?(view, "#dashboard-theme-switcher")
 
-      # Should update current_theme - check via HTML data attribute
-      assert has_element?(view, "[data-theme='light']")
+      # Test that theme options are available
+      assert has_element?(view, "button[aria-label='Switch to Light theme']")
+      assert has_element?(view, "button[aria-label='Switch to Dark theme']")
+
+      # Test that the component has the UniversalTheme hook
+      assert has_element?(view, "[phx-hook='UniversalTheme']")
     end
   end
 

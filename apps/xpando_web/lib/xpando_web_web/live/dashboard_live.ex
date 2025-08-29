@@ -278,17 +278,9 @@ defmodule XpandoWebWeb.DashboardLive do
 
   @impl true
   def handle_event("switch_theme", %{"theme" => theme}, socket) do
-    theme_name =
-      case theme do
-        "dark" -> "dark mode"
-        "light" -> "light mode"
-        _ -> theme
-      end
-
     socket =
       socket
       |> assign(:current_theme, theme)
-      |> push_event("show_toast", %{type: "info", message: "Theme switched to #{theme_name}"})
       |> push_event("theme_changed", %{theme: theme})
 
     {:noreply, socket}
@@ -361,8 +353,6 @@ defmodule XpandoWebWeb.DashboardLive do
     ~H"""
     <div
       class="min-h-screen bg-base-100"
-      data-theme={@current_theme}
-      phx-hook="Theme"
       id="dashboard-root"
     >
       <!-- Toast Container -->
@@ -427,7 +417,7 @@ defmodule XpandoWebWeb.DashboardLive do
         </div>
         <div class="navbar-end">
           <ThemeSwitcher.theme_switcher
-            current_theme={@current_theme}
+            id="dashboard-theme-switcher"
             class="mr-2"
           />
           <.link navigate={~p"/app"} class="btn btn-secondary hover:btn-secondary-focus mr-2">
