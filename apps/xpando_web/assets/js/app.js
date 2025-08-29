@@ -65,8 +65,8 @@ function initializeTheme() {
     }, 300)
   }
   
-  // Get stored theme or default to dark theme (synthwave)
-  const storedTheme = localStorage.getItem(STORAGE_KEY) || 'synthwave'
+  // Get stored theme or default to dark theme
+  const storedTheme = localStorage.getItem(STORAGE_KEY) || 'dark'
   
   // Apply initial theme
   applyTheme(storedTheme)

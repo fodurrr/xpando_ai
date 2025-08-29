@@ -40,11 +40,11 @@ defmodule XpandoWebWeb.DashboardLiveTest do
 
       # Test theme switching - use the actual theme values from ThemeSwitcher
       view
-      |> element("button[phx-value-theme='synthwave-light']")
+      |> element("button[phx-value-theme='light']")
       |> render_click()
 
       # Should update current_theme - check via HTML data attribute
-      assert has_element?(view, "[data-theme='synthwave-light']")
+      assert has_element?(view, "[data-theme='light']")
     end
   end
 

@@ -41,7 +41,7 @@ defmodule XpandoWebWeb.DashboardLive do
       |> assign(:nodes, nodes)
       |> assign(:network_stats, calculate_network_stats(nodes))
       |> assign(:loading, false)
-      |> assign(:current_theme, "synthwave")
+      |> assign(:current_theme, "dark")
       |> assign(:selected_node, nil)
       |> assign(:graph_zoom, 1.0)
       |> assign(:show_node_detail, false)
@@ -280,8 +280,8 @@ defmodule XpandoWebWeb.DashboardLive do
   def handle_event("switch_theme", %{"theme" => theme}, socket) do
     theme_name =
       case theme do
-        "synthwave" -> "dark mode"
-        "synthwave-light" -> "light mode"
+        "dark" -> "dark mode"
+        "light" -> "light mode"
         _ -> theme
       end
 

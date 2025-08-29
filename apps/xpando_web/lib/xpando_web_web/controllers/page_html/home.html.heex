@@ -120,7 +120,7 @@
   </div>
   <div class="navbar-end">
     <XpandoWebWeb.Components.UI.ThemeSwitcher.theme_switcher
-      current_theme="synthwave"
+      current_theme="dark"
       class="mr-2"
     />
     <.link navigate={~p"/dashboard"} class="btn btn-primary hover:btn-primary-focus mr-2">
@@ -496,14 +496,44 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
       <div>
-        <div class="mockup-code">
-          <pre data-prefix="$"><code>mix xpando.node.start</code></pre>
-          <pre data-prefix=">" class="text-warning"><code>Starting XPando Node...</code></pre>
-          <pre data-prefix=">" class="text-success"><code>Node ID: 0x7f3a9b2c...</code></pre>
-          <pre data-prefix=">" class="text-info"><code>Discovering peers...</code></pre>
-          <pre data-prefix=">" class="text-success"><code>Connected to 12 nodes</code></pre>
-          <pre data-prefix=">" class="text-primary"><code>Syncing knowledge base...</code></pre>
-          <pre data-prefix=">" class="text-success"><code>Ready for contributions!</code></pre>
+        <div class="bg-base-200 rounded-lg shadow-xl overflow-hidden relative">
+          <!-- Custom terminal header with dots -->
+          <div class="bg-base-100 px-4 py-3 flex items-center space-x-2">
+            <div class="w-3 h-3 rounded-full" style="background: oklch(52% 0.18 25);"></div>
+            <div class="w-3 h-3 rounded-full" style="background: oklch(62% 0.18 85);"></div>
+            <div class="w-3 h-3 rounded-full" style="background: oklch(48% 0.15 160);"></div>
+          </div>
+          <!-- Terminal content -->
+          <div class="px-4 py-6 font-mono text-sm space-y-1">
+            <div class="flex items-center">
+              <span class="text-success mr-2">$</span>
+              <span class="text-base-content font-bold">mix xpando.node.start</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-success mr-2">></span>
+              <span class="text-warning font-bold">Starting XPando Node...</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-success mr-2">></span>
+              <span class="text-success font-bold">Node ID: 0x7f3a9b2c...</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-success mr-2">></span>
+              <span class="text-info font-bold">Discovering peers...</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-success mr-2">></span>
+              <span class="text-success font-bold">Connected to 12 nodes</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-success mr-2">></span>
+              <span class="text-primary font-bold">Syncing knowledge base...</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-success mr-2">></span>
+              <span class="text-success font-bold">Ready for contributions!</span>
+            </div>
+          </div>
         </div>
       </div>
 

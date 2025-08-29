@@ -12,7 +12,7 @@
 const ThemeHook = {
   mounted() {
     // Load saved theme on mount and sync with LiveView
-    const savedTheme = localStorage.getItem('xpando-theme-preference') || 'synthwave'
+    const savedTheme = localStorage.getItem('xpando-theme-preference') || 'dark'
     document.documentElement.setAttribute('data-theme', savedTheme)
     
     // Push the saved theme to LiveView to sync state
