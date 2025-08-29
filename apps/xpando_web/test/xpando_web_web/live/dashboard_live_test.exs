@@ -7,7 +7,7 @@ defmodule XpandoWebWeb.DashboardLiveTest do
     test "displays dashboard when no nodes present", %{conn: conn} do
       {:ok, view, html} = live(conn, "/dashboard")
 
-      assert html =~ "XPando Network Dashboard"
+      assert html =~ "xPando Network Dashboard"
       assert html =~ "No nodes found. Network is initializing"
       assert has_element?(view, "#network-metrics")
     end
@@ -38,13 +38,13 @@ defmodule XpandoWebWeb.DashboardLiveTest do
     test "handles theme switching", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/dashboard")
 
-      # Test theme switching - be more specific to avoid ambiguity
+      # Test theme switching - use the actual theme values from ThemeSwitcher
       view
-      |> element("button[phx-value-theme='dark']")
+      |> element("button[phx-value-theme='synthwave-light']")
       |> render_click()
 
       # Should update current_theme - check via HTML data attribute
-      assert has_element?(view, "[data-theme='dark']")
+      assert has_element?(view, "[data-theme='synthwave-light']")
     end
   end
 
