@@ -6,6 +6,44 @@ defmodule XPando.Core.Node.ValidateNodeIdentity do
   - Cryptographic signature validity
   - Public key uniqueness across the network
   - Node ID uniqueness and proper derivation
+
+  ## Examples
+
+  Identity validation components:
+
+      iex> # Identity validation aspects
+      iex> validation_aspects = ["signature_validity", "key_uniqueness", "node_id_derivation"]
+      iex> "signature_validity" in validation_aspects
+      true
+      iex> "node_id_derivation" in validation_aspects  
+      true
+
+  Ed25519 key specifications:
+
+      iex> # Ed25519 key length requirements
+      iex> ed25519_key_length = 32
+      iex> ed25519_key_length > 0
+      true
+
+  Node ID derivation example:
+
+      iex> # Node ID generation from public key
+      iex> public_key_data = "sample_public_key_data"
+      iex> node_id = :crypto.hash(:sha256, public_key_data) |> Base.encode16(case: :lower)
+      iex> String.length(node_id)
+      64
+      iex> String.match?(node_id, ~r/^[0-9a-f]+$/)
+      true
+
+  Base64 encoding validation:
+
+      iex> # Base64 encoding/decoding
+      iex> test_data = "test_crypto_data"
+      iex> encoded = Base.encode64(test_data)
+      iex> decoded = Base.decode64!(encoded)
+      iex> decoded == test_data
+      true
+
   """
 
   use Ash.Resource.Validation

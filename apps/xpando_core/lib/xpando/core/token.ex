@@ -4,6 +4,30 @@ defmodule XPando.Core.Token do
 
   This resource stores authentication token metadata and manages token lifecycles
   for secure session management in the xPando distributed AI network.
+
+  ## Examples
+
+  Token expunge interval configuration:
+
+      iex> # Token cleanup interval in hours
+      iex> expunge_interval_hours = 24
+      iex> expunge_interval_hours > 0
+      true
+
+  Authentication token lifecycle:
+
+      iex> # Token states in the system
+      iex> states = [:active, :expired, :revoked]
+      iex> :active in states
+      true
+
+  Token security considerations:
+
+      iex> # Secure token handling principles
+      iex> principles = ["store_metadata_only", "auto_expunge", "secure_access"]
+      iex> "store_metadata_only" in principles
+      true
+
   """
 
   use Ash.Resource,

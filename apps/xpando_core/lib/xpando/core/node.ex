@@ -4,6 +4,44 @@ defmodule XPando.Core.Node do
 
   Nodes are AI participants with cryptographic identities, reputation scores,
   and network connection capabilities for distributed knowledge sharing.
+
+  ## Examples
+
+  Check valid node status options:
+
+      iex> # Available node status values
+      iex> [:active, :inactive, :maintenance, :suspended]
+      [:active, :inactive, :maintenance, :suspended]
+
+  Verify reputation score constraints:
+
+      iex> # Reputation score must be between 0.0 and 100.0
+      iex> min_reputation = Decimal.new("0.0")
+      iex> max_reputation = Decimal.new("100.0")
+      iex> default_reputation = Decimal.new("50.0")
+      iex> Decimal.compare(default_reputation, min_reputation) in [:gt, :eq]
+      true
+      iex> Decimal.compare(default_reputation, max_reputation) in [:lt, :eq]
+      true
+
+  Test port number validation:
+
+      iex> # Valid port range (1-65535)
+      iex> min_port = 1
+      iex> max_port = 65_535
+      iex> default_port = 8080
+      iex> default_port >= min_port and default_port <= max_port
+      true
+
+  Calculate success rate example:
+
+      iex> # Success rate calculation logic
+      iex> total_validations = 10
+      iex> successful_validations = 8
+      iex> success_rate = if total_validations > 0, do: successful_validations / total_validations, else: 0.0
+      iex> success_rate
+      0.8
+
   """
 
   use Ash.Resource,

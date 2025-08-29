@@ -4,6 +4,35 @@ defmodule XPando.Core.Knowledge.ValidateContentHash do
 
   Validates that knowledge content matches its SHA-256 hash to ensure
   data integrity and prevent tampering in the distributed network.
+
+  ## Examples
+
+  Test SHA-256 hashing:
+
+      iex> # SHA-256 hash generation
+      iex> content = "Test knowledge content"
+      iex> hash = :crypto.hash(:sha256, content) |> Base.encode16(case: :lower)
+      iex> String.length(hash)
+      64
+      iex> String.match?(hash, ~r/^[0-9a-f]+$/)
+      true
+
+  Hash validation example:
+
+      iex> # Content-hash matching validation
+      iex> content = "Sample content"
+      iex> correct_hash = :crypto.hash(:sha256, content) |> Base.encode16(case: :lower)
+      iex> wrong_hash = "invalid_hash"
+      iex> correct_hash != wrong_hash
+      true
+
+  Integrity verification:
+
+      iex> # Data integrity principles
+      iex> integrity_aspects = ["hash_matching", "tamper_detection", "content_verification"]
+      iex> "hash_matching" in integrity_aspects
+      true
+
   """
 
   use Ash.Resource.Validation

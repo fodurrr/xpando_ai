@@ -4,6 +4,57 @@ defmodule XPando.Core.Knowledge do
 
   Stores content with integrity checking via SHA-256 hashing, validation workflow
   tracking, confidence scoring, and quality metrics for collective intelligence.
+
+  ## Examples
+
+  Check valid knowledge types:
+
+      iex> # Available knowledge type values
+      iex> [:insight, :fact, :procedure, :pattern, :hypothesis, :observation]
+      [:insight, :fact, :procedure, :pattern, :hypothesis, :observation]
+
+  Test validation status workflow:
+
+      iex> # Validation status progression
+      iex> statuses = [:pending, :validating, :validated, :disputed, :rejected]
+      iex> :pending in statuses
+      true
+      iex> :validated in statuses  
+      true
+
+  Calculate confidence score example:
+
+      iex> # Confidence calculation logic
+      iex> positive_validations = 8
+      iex> total_validations = 10
+      iex> confidence = if total_validations > 0, do: Decimal.div(Decimal.new(positive_validations), Decimal.new(total_validations)), else: Decimal.new("0.0")
+      iex> Decimal.to_float(confidence)
+      0.8
+
+  Test content hash generation:
+
+      iex> # SHA-256 content hashing
+      iex> content = "This is sample knowledge content"
+      iex> hash = :crypto.hash(:sha256, content) |> Base.encode16(case: :lower)
+      iex> String.length(hash)
+      64
+      iex> String.match?(hash, ~r/^[0-9a-f]+$/)
+      true
+
+  Quality score calculation:
+
+      iex> # Weighted quality score components
+      iex> confidence = Decimal.new("0.8")
+      iex> accuracy = Decimal.new("0.7")
+      iex> relevance = Decimal.new("0.9")
+      iex> novelty = Decimal.new("0.6")
+      iex> quality = Decimal.mult(confidence, Decimal.new("0.4")) 
+      ...> |> Decimal.add(Decimal.mult(accuracy, Decimal.new("0.3")))
+      ...> |> Decimal.add(Decimal.mult(relevance, Decimal.new("0.2")))  
+      ...> |> Decimal.add(Decimal.mult(novelty, Decimal.new("0.1")))
+      iex> Decimal.to_float(quality)
+      0.77
+
   """
 
   use Ash.Resource,

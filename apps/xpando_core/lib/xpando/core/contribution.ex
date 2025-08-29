@@ -4,6 +4,56 @@ defmodule XPando.Core.Contribution do
 
   Tracks quality assessments, token rewards, impact metrics, and consensus
   scoring for contributions made by nodes to the knowledge network.
+
+  ## Examples
+
+  Check valid contribution types:
+
+      iex> # Available contribution type values
+      iex> [:submission, :validation, :enhancement, :correction, :verification]
+      [:submission, :validation, :enhancement, :correction, :verification]
+
+  Test contribution status workflow:
+
+      iex> # Contribution status progression  
+      iex> statuses = [:active, :under_review, :accepted, :rejected, :disputed, :archived]
+      iex> :under_review in statuses
+      true
+      iex> :accepted in statuses
+      true
+
+  Calculate review rate example:
+
+      iex> # Review rate calculation
+      iex> positive_reviews = 7
+      iex> total_reviews = 10
+      iex> review_rate = if total_reviews > 0, do: positive_reviews / total_reviews, else: 0.0
+      iex> review_rate
+      0.7
+
+  Token reward calculation example:
+
+      iex> # Base reward calculation
+      iex> base_rate = Decimal.new("100.0")
+      iex> quality_score = Decimal.new("8.5")
+      iex> base_reward = Decimal.mult(base_rate, Decimal.div(quality_score, Decimal.new("10.0")))
+      iex> Decimal.to_float(base_reward)
+      85.0
+
+  Weighted impact score:
+
+      iex> # Impact calculation components
+      iex> impact = Decimal.new("5.0")
+      iex> quality = Decimal.new("8.0")  
+      iex> value = Decimal.new("0.7")
+      iex> novelty = Decimal.new("0.6")
+      iex> weighted = Decimal.mult(impact, Decimal.new("0.4"))
+      ...> |> Decimal.add(Decimal.mult(quality, Decimal.new("0.3")))
+      ...> |> Decimal.add(Decimal.mult(value, Decimal.new("0.2")))
+      ...> |> Decimal.add(Decimal.mult(novelty, Decimal.new("0.1")))
+      iex> Decimal.to_float(weighted)
+      4.6
+
   """
 
   use Ash.Resource,

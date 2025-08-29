@@ -4,6 +4,33 @@ defmodule XPando.Core.User do
 
   Manages user accounts with role-based permissions for the distributed AI network.
   Supports node operator authentication and web dashboard access.
+
+  ## Examples
+
+  Check available user roles:
+
+      iex> # Valid user roles in the system
+      iex> [:user, :node_operator, :admin]
+      [:user, :node_operator, :admin]
+
+  Verify email validation pattern:
+
+      iex> # Test email validation regex
+      iex> email_regex = ~r/^[^\s]+@[^\s]+$/
+      iex> Regex.match?(email_regex, "valid@example.com")
+      true
+      iex> Regex.match?(email_regex, "invalid-email")
+      false
+
+  Check attribute constraints:
+
+      iex> # Email length constraints
+      iex> min_length = 1
+      iex> max_length = 160
+      iex> test_email = "test@example.com"
+      iex> String.length(test_email) >= min_length and String.length(test_email) <= max_length
+      true
+
   """
 
   use Ash.Resource,

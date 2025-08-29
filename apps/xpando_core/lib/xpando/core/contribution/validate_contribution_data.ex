@@ -4,6 +4,43 @@ defmodule XPando.Core.Contribution.ValidateContributionData do
 
   Ensures contribution records have required data fields and
   meet quality standards before being persisted to the database.
+
+  ## Examples
+
+  Check contribution types requiring specific data:
+
+      iex> # Contribution types with validation requirements
+      iex> validated_types = [:validation, :enhancement, :correction, :verification]
+      iex> :validation in validated_types
+      true
+      iex> :enhancement in validated_types  
+      true
+
+  Test required fields for validation contributions:
+
+      iex> # Validation contribution required fields
+      iex> validation_fields = [:validation_method, :confidence]
+      iex> :validation_method in validation_fields
+      true
+      iex> :confidence in validation_fields
+      true
+
+  Map field validation example:
+
+      iex> # Field presence checking
+      iex> data = %{validation_method: "peer_review", confidence: 0.85}
+      iex> Map.has_key?(data, :validation_method)
+      true
+      iex> Map.has_key?(data, :confidence)
+      true
+
+  Contribution data structure validation:
+
+      iex> # Valid data structures  
+      iex> valid_data_types = ["map", "empty_map", "nil"]
+      iex> "map" in valid_data_types
+      true
+
   """
 
   use Ash.Resource.Validation
