@@ -2,4 +2,62 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* Responsive design enhancements */
+@import "./responsive.css";
+
 /* This file is for your main application CSS */
+
+/* Floating Back to Top Buttons */
+.back-to-top-btn {
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.back-to-top-btn:hover {
+  transform: translateY(-50%) scale(1.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  opacity: 1;
+}
+
+/* Show/hide animation for back to top buttons */
+.back-to-top-btn.show {
+  display: flex !important;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.back-to-top-btn.hide {
+  animation: fadeOutDown 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateY(20px);
+  }
+  to {
+    opacity: 0.8;
+    transform: translateY(-50%) translateY(0);
+  }
+}
+
+@keyframes fadeOutDown {
+  from {
+    opacity: 0.8;
+    transform: translateY(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-50%) translateY(20px);
+  }
+}
+
+/* Mobile responsive positioning */
+@media (max-width: 768px) {
+  #back-to-top-left {
+    left: 1rem;
+  }
+  
+  #back-to-top-right {
+    right: 1rem;
+  }
+}

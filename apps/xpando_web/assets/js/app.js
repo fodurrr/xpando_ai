@@ -21,11 +21,20 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+// Import dashboard hooks
+import { ThemeHook, NetworkStatusHook, NetworkGraphHook, MetricsHook, ToastHook } from "./dashboard_hooks"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: {_csrf_token: csrfToken},
+  hooks: {
+    Theme: ThemeHook,
+    NetworkStatus: NetworkStatusHook,
+    NetworkGraph: NetworkGraphHook,
+    Metrics: MetricsHook,
+    Toast: ToastHook
+  }
 })
 
 // Show progress bar on live navigation and form submits
@@ -45,69 +54,60 @@ window.liveSocket = liveSocket
 // Theme management: Support manual theme selection with localStorage persistence
 function initializeTheme() {
   const html = document.documentElement
-  const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
   const STORAGE_KEY = 'xpando-theme-preference'
   
   function applyTheme(theme) {
     html.setAttribute('data-theme', theme)
-    // Update theme toggle button if it exists
-    updateThemeToggleButton(theme)
+    // Add smooth transition effect
+    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease'
+    setTimeout(() => {
+      document.body.style.transition = ''
+    }, 300)
   }
   
-  function getThemeFromPreference(userPreference) {
-    switch (userPreference) {
-      case 'dark':
-        return 'synthwave'
-      case 'light':
-        return 'synthwave-light'
-      case 'auto':
-      default:
-        return prefersDarkScheme.matches ? 'synthwave' : 'synthwave-light'
-    }
-  }
-  
-  function updateThemeToggleButton(currentTheme) {
-    const themeButton = document.getElementById('theme-toggle')
-    const themeIcon = document.getElementById('theme-icon')
-    const themeText = document.getElementById('theme-text')
-    
-    if (themeButton && themeIcon && themeText) {
-      const isDark = currentTheme === 'synthwave'
-      themeIcon.innerHTML = isDark ? 
-        // Sun icon for light mode option
-        `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />` :
-        // Moon icon for dark mode option  
-        `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />`
-      
-      themeText.textContent = isDark ? 'Light' : 'Dark'
-      themeButton.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} theme`)
-    }
-  }
-  
-  // Get stored preference or default to 'auto'
-  const storedPreference = localStorage.getItem(STORAGE_KEY) || 'auto'
-  const initialTheme = getThemeFromPreference(storedPreference)
+  // Get stored theme or default to dark theme (synthwave)
+  const storedTheme = localStorage.getItem(STORAGE_KEY) || 'synthwave'
   
   // Apply initial theme
-  applyTheme(initialTheme)
+  applyTheme(storedTheme)
   
-  // Listen for system theme changes only if preference is 'auto'
-  prefersDarkScheme.addEventListener('change', () => {
-    const currentPreference = localStorage.getItem(STORAGE_KEY) || 'auto'
-    if (currentPreference === 'auto') {
-      applyTheme(getThemeFromPreference('auto'))
+  // Handle theme switching clicks for static pages (non-LiveView)
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('[phx-click="switch_theme"]')) {
+      const themeValue = e.target.getAttribute('phx-value-theme')
+      if (themeValue) {
+        localStorage.setItem(STORAGE_KEY, themeValue)
+        applyTheme(themeValue)
+        
+        // Update dropdown state
+        updateDropdownSelection(themeValue)
+        
+        // Close the dropdown after selection
+        const dropdownButton = e.target.closest('.dropdown').querySelector('[tabindex="0"]')
+        if (dropdownButton) {
+          dropdownButton.blur()
+          // Remove focus from any dropdown elements
+          document.activeElement?.blur()
+        }
+      }
     }
   })
   
-  // Expose theme switching function globally
-  window.toggleTheme = function() {
-    const currentTheme = html.getAttribute('data-theme')
-    const newPreference = currentTheme === 'synthwave' ? 'light' : 'dark'
-    const newTheme = getThemeFromPreference(newPreference)
-    
-    localStorage.setItem(STORAGE_KEY, newPreference)
-    applyTheme(newTheme)
+  function updateDropdownSelection(selectedTheme) {
+    // Update active state in dropdowns
+    const buttons = document.querySelectorAll('[data-theme-toggle]')
+    buttons.forEach(button => {
+      const theme = button.getAttribute('phx-value-theme')
+      if (theme === selectedTheme) {
+        button.classList.add('active')
+      } else {
+        button.classList.remove('active')
+      }
+    })
   }
+  
+  // Initialize dropdown state
+  updateDropdownSelection(storedTheme)
 }
 
 // Initialize theme when DOM is loaded
@@ -115,5 +115,152 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeTheme)
 } else {
   initializeTheme()
+}
+
+// Smooth scrolling for anchor links with animation
+function initializeSmoothScrolling() {
+  // Smooth scroll function with custom easing
+  function smoothScrollTo(targetPosition, duration = 800) {
+    const startPosition = window.pageYOffset
+    const distance = targetPosition - startPosition
+    let startTime = null
+
+    function animation(currentTime) {
+      if (startTime === null) startTime = currentTime
+      const timeElapsed = currentTime - startTime
+      const run = ease(timeElapsed, startPosition, distance, duration)
+      window.scrollTo(0, run)
+      if (timeElapsed < duration) requestAnimationFrame(animation)
+    }
+
+    // Easing function for smooth animation
+    function ease(t, b, c, d) {
+      t /= d / 2
+      if (t < 1) return c / 2 * t * t + b
+      t--
+      return -c / 2 * (t * (t - 2) - 1) + b
+    }
+
+    requestAnimationFrame(animation)
+  }
+
+  // Add click event listener for anchor links
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('a[href^="#"]')
+    if (!link) return
+    
+    const href = link.getAttribute('href')
+    if (!href || href === '#') return
+    
+    const targetId = href.substring(1)
+    const targetElement = document.getElementById(targetId)
+    
+    if (targetElement) {
+      e.preventDefault()
+      
+      // Calculate offset for sticky navbar (80px)
+      const navbarHeight = 80
+      const targetPosition = targetElement.offsetTop - navbarHeight
+      
+      // Perform smooth scroll with custom animation
+      smoothScrollTo(Math.max(0, targetPosition), 1200) // 1.2 second duration
+      
+      // Update URL after scroll
+      setTimeout(() => {
+        if (history.pushState) {
+          history.pushState(null, null, href)
+        }
+      }, 100)
+    }
+  })
+}
+
+// Initialize smooth scrolling when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeSmoothScrolling)
+} else {
+  initializeSmoothScrolling()
+}
+
+// Back to Top Buttons functionality
+function initializeBackToTop() {
+  const backToTopLeftBtn = document.getElementById('back-to-top-left')
+  const backToTopRightBtn = document.getElementById('back-to-top-right')
+  const backToTopBtns = [backToTopLeftBtn, backToTopRightBtn].filter(btn => btn)
+
+  // Smooth scroll to top function (reusing the same smooth scroll logic)
+  function scrollToTop() {
+    const startPosition = window.pageYOffset
+    const distance = -startPosition
+    let startTime = null
+
+    function animation(currentTime) {
+      if (startTime === null) startTime = currentTime
+      const timeElapsed = currentTime - startTime
+      const run = ease(timeElapsed, startPosition, distance, 1000) // 1 second duration
+      window.scrollTo(0, run)
+      if (timeElapsed < 1000) requestAnimationFrame(animation)
+    }
+
+    // Same easing function as smooth scrolling
+    function ease(t, b, c, d) {
+      t /= d / 2
+      if (t < 1) return c / 2 * t * t + b
+      t--
+      return -c / 2 * (t * (t - 2) - 1) + b
+    }
+
+    requestAnimationFrame(animation)
+  }
+
+  // Show/hide buttons based on scroll position
+  function toggleBackToTopButtons() {
+    const scrollPosition = window.pageYOffset
+    const windowHeight = window.innerHeight
+    
+    // Show buttons when user has scrolled down at least one screen height
+    backToTopBtns.forEach(btn => {
+      if (scrollPosition > windowHeight * 0.5) {
+        btn.classList.remove('hidden', 'hide')
+        btn.classList.add('show')
+      } else {
+        btn.classList.remove('show')
+        btn.classList.add('hide')
+        // Hide completely after animation
+        setTimeout(() => {
+          if (btn.classList.contains('hide')) {
+            btn.classList.add('hidden')
+          }
+        }, 300)
+      }
+    })
+  }
+
+  // Add click event listeners to both buttons
+  backToTopBtns.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault()
+      scrollToTop()
+    })
+  })
+
+  // Add scroll event listener with throttling for performance
+  let scrollTimeout
+  window.addEventListener('scroll', function() {
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout)
+    }
+    scrollTimeout = setTimeout(toggleBackToTopButtons, 10)
+  })
+
+  // Initial check
+  toggleBackToTopButtons()
+}
+
+// Initialize back to top when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeBackToTop)
+} else {
+  initializeBackToTop()
 }
 

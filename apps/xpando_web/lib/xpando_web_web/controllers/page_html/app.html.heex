@@ -1,28 +1,123 @@
-<.flash_group flash={@flash} />
+<nav
+  class="navbar bg-base-300 shadow-lg sticky top-0 z-50 px-4"
+  role="navigation"
+  aria-label="main navigation"
+>
+  <div class="navbar-start">
+    <div class="dropdown">
+      <button
+        tabindex="0"
+        class="btn btn-ghost lg:hidden"
+        aria-label="Open mobile menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h8m-8 6h16"
+          />
+        </svg>
+      </button>
+      <ul
+        id="mobile-menu"
+        tabindex="0"
+        class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+        role="menu"
+      >
+        <li role="menuitem"><.link navigate={~p"/"} class="hover:text-primary">Home</.link></li>
+      </ul>
+    </div>
+    <.link
+      navigate={~p"/"}
+      class="btn btn-ghost text-xl font-bold text-primary hover:text-primary-focus"
+    >
+      xPando AI
+    </.link>
+  </div>
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1" role="menubar">
+      <li role="menuitem">
+        <.link navigate={~p"/"} class="text-base-content hover:text-primary transition-colors">
+          Home
+        </.link>
+      </li>
+    </ul>
+  </div>
+  <div class="navbar-end">
+    <XpandoWebWeb.Components.UI.ThemeSwitcher.theme_switcher
+      current_theme="synthwave"
+      class="mr-2"
+    />
+    <.link navigate={~p"/dashboard"} class="btn btn-primary hover:btn-primary-focus mr-2">
+      <span class="hidden sm:inline">Dashboard</span>
+      <span class="sm:hidden">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          />
+        </svg>
+      </span>
+    </.link>
+  </div>
+</nav>
 
 <div class="min-h-screen bg-gradient-to-br from-base-300 to-base-100">
-  <nav class="navbar bg-base-300 shadow-lg">
-    <div class="navbar-start">
-      <.link navigate={~p"/"} class="btn btn-ghost text-xl font-bold text-primary">
-        ← XPando AI
-      </.link>
-    </div>
-    <div class="navbar-center">
-      <span class="text-xl font-semibold">XPando AI App</span>
-    </div>
-    <div class="navbar-end">
-      <div class="badge badge-warning badge-lg">Coming Soon</div>
-    </div>
-  </nav>
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="text-center mb-12">
+      <div class="mb-8">
+        <div class="inline-flex items-center justify-center w-24 h-24 bg-primary/10 rounded-full mb-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-12 w-12 text-primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+            />
+          </svg>
+        </div>
 
-  <div class="hero min-h-[calc(100vh-4rem)]">
-    <div class="hero-content text-center">
-      <div class="max-w-2xl">
-        <div class="mb-8">
-          <div class="inline-flex items-center justify-center w-24 h-24 bg-primary/10 rounded-full mb-6">
+        <h1 class="text-5xl font-bold mb-4">xPando AI Application</h1>
+        <p class="text-xl text-accent mb-6">
+          The full xPando AI platform is currently under development
+        </p>
+        <p class="text-lg opacity-80 mb-8">
+          We're building the future of decentralized AI networks. The complete application
+          will feature node management, knowledge contribution, XPD token operations, and
+          real-time network participation.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-8 mb-12">
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body items-center text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-12 w-12 text-primary"
+              class="h-8 w-8 text-primary mb-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -31,166 +126,134 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               />
             </svg>
-          </div>
-
-          <h1 class="text-5xl font-bold mb-4">XPando AI Application</h1>
-          <p class="text-xl text-accent mb-6">
-            The full XPando AI platform is currently under development
-          </p>
-          <p class="text-lg opacity-80 mb-8">
-            We're building the future of decentralized AI networks. The complete application
-            will feature node management, knowledge contribution, XPD token operations, and
-            real-time network participation.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="card bg-base-200 shadow-xl">
-            <div class="card-body items-center text-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-8 w-8 text-primary mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              <h3 class="card-title text-lg">Node Dashboard</h3>
-              <p class="text-sm opacity-70">Manage your AI nodes and monitor network activity</p>
-            </div>
-          </div>
-
-          <div class="card bg-base-200 shadow-xl">
-            <div class="card-body items-center text-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-8 w-8 text-secondary mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                />
-              </svg>
-              <h3 class="card-title text-lg">Knowledge Hub</h3>
-              <p class="text-sm opacity-70">Contribute and validate knowledge in the network</p>
-            </div>
-          </div>
-
-          <div class="card bg-base-200 shadow-xl">
-            <div class="card-body items-center text-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-8 w-8 text-accent mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <h3 class="card-title text-lg">XPD Wallet</h3>
-              <p class="text-sm opacity-70">Manage your XPD tokens and rewards</p>
-            </div>
+            <h3 class="card-title text-lg">Node Dashboard</h3>
+            <p class="text-sm opacity-70">Manage your AI nodes and monitor network activity</p>
           </div>
         </div>
 
-        <div class="card bg-base-200 shadow-xl mb-8">
-          <div class="card-body">
-            <h3 class="card-title justify-center mb-4">Development Progress</h3>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span>Core Infrastructure</span>
-                  <span>85%</span>
-                </div>
-                <progress class="progress progress-primary w-full" value="85" max="100">
-                </progress>
-              </div>
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span>P2P Network Layer</span>
-                  <span>70%</span>
-                </div>
-                <progress class="progress progress-secondary w-full" value="70" max="100">
-                </progress>
-              </div>
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span>User Interface</span>
-                  <span>45%</span>
-                </div>
-                <progress class="progress progress-accent w-full" value="45" max="100"></progress>
-              </div>
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span>Token Integration</span>
-                  <span>60%</span>
-                </div>
-                <progress class="progress progress-info w-full" value="60" max="100"></progress>
-              </div>
-            </div>
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body items-center text-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-secondary mb-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+              />
+            </svg>
+            <h3 class="card-title text-lg">Knowledge Hub</h3>
+            <p class="text-sm opacity-70">Contribute and validate knowledge in the network</p>
           </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <.link
-            navigate={~p"/"}
-            class="btn btn-primary btn-lg hover:btn-primary-focus"
-          >
-            ← Back to Home
-          </.link>
-          <button
-            class="btn btn-outline btn-secondary btn-lg"
-            onclick="document.getElementById('waitlist_modal').showModal()"
-          >
-            Join Waitlist
-          </button>
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body items-center text-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-accent mb-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 class="card-title text-lg">XPD Wallet</h3>
+            <p class="text-sm opacity-70">Manage your XPD tokens and rewards</p>
+          </div>
         </div>
       </div>
+
+      <div class="card bg-base-200 shadow-xl mb-12 max-w-4xl mx-auto">
+        <div class="card-body">
+          <h3 class="card-title justify-center mb-4">Development Progress</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span>Core Infrastructure</span>
+                <span>85%</span>
+              </div>
+              <progress class="progress progress-primary w-full" value="85" max="100"></progress>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span>P2P Network Layer</span>
+                <span>70%</span>
+              </div>
+              <progress class="progress progress-secondary w-full" value="70" max="100">
+              </progress>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span>User Interface</span>
+                <span>45%</span>
+              </div>
+              <progress class="progress progress-accent w-full" value="45" max="100"></progress>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span>Token Integration</span>
+                <span>60%</span>
+              </div>
+              <progress class="progress progress-info w-full" value="60" max="100"></progress>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <.link
+          navigate={~p"/"}
+          class="btn btn-primary btn-lg hover:btn-primary-focus"
+        >
+          ← Back to Home
+        </.link>
+        <button
+          class="btn btn-outline btn-secondary btn-lg"
+          onclick="document.getElementById('waitlist_modal').showModal()"
+        >
+          Join Waitlist
+        </button>
+      </div>
     </div>
-  </div>
-  
+    
 <!-- Waitlist Modal -->
-  <dialog id="waitlist_modal" class="modal">
-    <div class="modal-box">
-      <h3 class="font-bold text-lg mb-4">Join the XPando AI Waitlist</h3>
-      <p class="py-4">
-        Be among the first to experience the full XPando AI platform when it launches.
-        We'll notify you as soon as beta access becomes available.
-      </p>
-      <div class="modal-action">
-        <form method="dialog" class="flex gap-2">
-          <button class="btn btn-outline">Maybe Later</button>
-          <.link
-            navigate={~p"/"}
-            class="btn btn-primary"
-            onclick="document.getElementById('waitlist_modal').close()"
-          >
-            Subscribe to Newsletter
-          </.link>
-        </form>
+    <dialog id="waitlist_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Join the xPando AI Waitlist</h3>
+        <p class="py-4">
+          Be among the first to experience the full xPando AI platform when it launches.
+          We'll notify you as soon as beta access becomes available.
+        </p>
+        <div class="modal-action">
+          <form method="dialog" class="flex gap-2">
+            <button class="btn btn-outline">Maybe Later</button>
+            <.link
+              navigate={~p"/"}
+              class="btn btn-primary"
+              onclick="document.getElementById('waitlist_modal').close()"
+            >
+              Subscribe to Newsletter
+            </.link>
+          </form>
+        </div>
       </div>
-    </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  </div>
 </div>
