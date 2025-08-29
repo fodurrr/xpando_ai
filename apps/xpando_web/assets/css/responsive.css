@@ -1,0 +1,213 @@
+/* Responsive Design Enhancements for xPando Dashboard */
+
+/* Mobile-first responsive utilities */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch targets for mobile */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Network graph responsiveness */
+@media (max-width: 768px) {
+  .network-graph-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .network-graph-controls {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .network-graph-legend {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    padding: 8px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Dashboard grid responsiveness */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .network-stats {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+/* Mobile navigation */
+@media (max-width: 640px) {
+  .navbar-title {
+    font-size: 1.125rem;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .desktop-menu {
+    display: none;
+  }
+  
+  .stats-vertical {
+    flex-direction: column;
+  }
+  
+  .stat {
+    text-align: center;
+    padding: 1rem 0.5rem;
+  }
+}
+
+/* Node cards mobile layout */
+@media (max-width: 640px) {
+  .node-card {
+    margin: 0.5rem 0;
+  }
+  
+  .node-card .card-body {
+    padding: 1rem;
+  }
+  
+  .node-specializations {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .node-specializations .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Modal responsiveness */
+@media (max-width: 768px) {
+  .node-detail-modal {
+    margin: 0;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+  
+  .node-detail-content {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  
+  .node-detail-header {
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .node-detail-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Theme switcher mobile */
+@media (max-width: 640px) {
+  .theme-dropdown {
+    right: 0;
+    left: auto;
+    min-width: 160px;
+  }
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse,
+  .animate-spin,
+  .animate-bounce {
+    animation: none;
+  }
+  
+  .transition-all {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .border-base-300 {
+    border-width: 2px;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-full-width {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  
+  .card {
+    border: 1px solid #000;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  .dashboard-grid {
+    display: block;
+  }
+  
+  .network-graph-container {
+    max-height: 400px;
+    overflow: hidden;
+  }
+}
+
+/* Focus styles for accessibility */
+.focus-visible:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Connection status indicator */
+.connection-indicator {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+@media (max-width: 640px) {
+  .connection-indicator {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}

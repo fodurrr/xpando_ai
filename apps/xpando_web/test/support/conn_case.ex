@@ -17,6 +17,8 @@ defmodule XpandoWebWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL.Sandbox
+
   using do
     quote do
       # The default endpoint for testing
@@ -31,7 +33,11 @@ defmodule XpandoWebWeb.ConnCase do
     end
   end
 
-  setup _tags do
+  setup tags do
+    # Set up database sandbox
+    pid = Sandbox.start_owner!(XPando.Repo, shared: not tags[:async])
+    ExUnit.Callbacks.on_exit(fn -> Sandbox.stop_owner(pid) end)
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

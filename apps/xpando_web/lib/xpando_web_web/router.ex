@@ -20,6 +20,11 @@ defmodule XpandoWebWeb.Router do
     get "/", PageController, :home
     post "/subscribe", PageController, :subscribe
     get "/app", PageController, :app
+
+    # Dashboard routes with dedicated layout
+    live_session :dashboard, layout: {XpandoWebWeb.Layouts, :dashboard} do
+      live "/dashboard", DashboardLive, :index
+    end
   end
 
   # Other scopes may use custom stacks.

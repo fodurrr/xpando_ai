@@ -86,12 +86,18 @@ defmodule XPando.Node.Manager do
     schedule_health_check()
 
     # Subscribe to cluster events (if PubSub is available)
-    try do
-      Phoenix.PubSub.subscribe(XpandoWeb.PubSub, "cluster:events")
-      Logger.debug("Successfully subscribed to cluster events")
-    rescue
-      error ->
-        Logger.warning("Failed to subscribe to cluster events: #{inspect(error)}")
+    case Process.whereis(XpandoWeb.PubSub) do
+      nil ->
+        Logger.debug("PubSub server not available, skipping cluster events subscription")
+
+      _pid ->
+        try do
+          Phoenix.PubSub.subscribe(XpandoWeb.PubSub, "cluster:events")
+          Logger.debug("Successfully subscribed to cluster events")
+        rescue
+          error ->
+            Logger.warning("Failed to subscribe to cluster events: #{inspect(error)}")
+        end
     end
 
     # Monitor node connections/disconnections with detailed reasons
